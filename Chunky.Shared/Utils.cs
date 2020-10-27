@@ -1,3 +1,4 @@
+using System;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
@@ -26,6 +27,19 @@ namespace Chunky.Shared
         public static string SolveDllName(Assembly assembly)
         {
             return assembly.GetName().ToString().Split(',')[0] + ".dll";
+        }
+
+        public static string SolveNameFromFileName(string fileName)
+        {
+            string[] split = fileName.Split('.');
+            string result = "";
+            
+            for (int i = 0; i < split.Length - 1; i++)
+            {
+                result += split[i];
+            }
+
+            return result;
         }
     }
 }
