@@ -76,13 +76,14 @@ namespace Chunky.Shared
                     //Console.WriteLine("B: " + bitmap.GetPixel(x, y).B);
                     //Console.WriteLine("----------");
                     //Console.WriteLine(bitmap.GetPixel(x, y).R);
-                    
-                    // TODO: Replace the GetPixel calls with the marshalled alternative (or better yet, find a better solution altogether)
+
+                    // TODO: Replace the GetPixel call with the marshalled alternative (or better yet, find a better solution altogether)
+                    Color pixel = bitmap.GetPixel(x, y);
                     _map[x, y] = new ColorRgba(
-                        bitmap.GetPixel(x, y).R,
-                        bitmap.GetPixel(x, y).G,
-                        bitmap.GetPixel(x, y).B,
-                        bitmap.GetPixel(x, y).A
+                        pixel.R,
+                        pixel.G,
+                        pixel.B,
+                        pixel.A
                     );
                 }
             }
