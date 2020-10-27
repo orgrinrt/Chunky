@@ -22,19 +22,24 @@ namespace Chunky
             SaveResultToDisk(chonker.GenerateChunks(), Path.Combine(assetsDir, "Result"), "testmap");
         }
 
-        private static void SaveResultToDisk(ChunkData[] result, string targetDir, string name)
+        private static void SaveResultToDisk(ChunkData[,] result, string targetDir, string name)
         {
-            //int index = 0;
-            
             Directory.CreateDirectory(targetDir);
+            ChunkData chunk;
 
-            int offset = 5;
-            foreach (ChunkData chunk in result)
+            for (int x = 0; x < result.GetLength(0); x++)
             {
-                chunk.Bitmap.Save(Path.Combine(targetDir, name + "-" + chunk.X + "-" + chunk.Y + "-" + ".png"), ImageFormat.Png);
-                //Console.WriteLine(chunk.Bitmap.GetPixel(0 + offset, 75));
-                offset += 10;
+                for (int y = 0; y < result.GetLength(1); y++)
+                {
+                    chunk = result[x,y];
+                        
+                    chunk.Bitmap.Save(Path.Combine(targetDir, name + "-" + chunk.X + "-" + chunk.Y + ".png"), ImageFormat.Png);
+                    //Console.WriteLine(chunk.Bitmap.GetPixel(0 + offset, 75));
+                }
             }
+
+            Reconstructor reconstructor = new Reconstructor(result);
+            reconstructor.Reconstruct(Path.Combine(targetDir, name + "-" + "reconstruct.png"));
         }
 
         private static void ParseArgs(string[] args)

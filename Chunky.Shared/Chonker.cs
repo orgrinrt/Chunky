@@ -40,9 +40,9 @@ namespace Chunky.Shared
         }
         */
         
-        public ChunkData[] GenerateChunks()
+        public ChunkData[,] GenerateChunks()
         {
-            List<ChunkData> result = new List<ChunkData>();
+            ChunkData[,] result = new ChunkData[_chunkCountX, _chunkCountY];
             
             short originX, originY;
 
@@ -52,12 +52,6 @@ namespace Chunky.Shared
                 {
                     originX = (short) Math.Round((double) (x * _chunkWidth));
                     originY = (short) Math.Round((double) (y * _chunkHeight));
-
-                    Console.WriteLine("originX: " + originX);
-                    Console.WriteLine("originY: " + originY);
-                    Console.WriteLine("chunkSizeX: " + _chunkWidth);
-                    Console.WriteLine("chunkSizeY: " + _chunkHeight);
-                    Console.WriteLine("-------");
 
                     Bitmap bitmap = new Bitmap(_chunkWidth, _chunkHeight, PixelFormat.Format32bppRgb);
                     Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
@@ -82,7 +76,7 @@ namespace Chunky.Shared
                             //Console.WriteLine("X: " + ((cy - originY) + 1) + ", Y: " + (cx - originX));
                             for (int i = 0; i < 4; i++)
                             {
-                                if (index + i > bytes - 1) break;
+                                if (index > bytes - 1) break;
                                 rgbValues[index] = _map[cx, cy];
                                 index++;
                             }
@@ -93,11 +87,11 @@ namespace Chunky.Shared
                     
                     bitmap.UnlockBits(data);
 
-                    result.Add(new ChunkData(bitmap, x, y));
+                    result[x, y] = new ChunkData(bitmap, x, y);
                 }
             }
 
-            return result.ToArray();
+            return result;
         }
 
         private void SolveChunkSize()
