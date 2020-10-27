@@ -11,8 +11,11 @@ namespace Chunky.Shared
         private string _name;
         private ImageFormat _format;
         private ChunkData[,] _data;
-        private ReconstructMode _mode = ReconstructMode.Normal;
-        
+        private Bitmap _reconstruction;
+
+        private byte _lighterThreshold = 230;
+        private float _diffMultiplier = 15f;
+
         public ChunkData[,] Data => _data;
 
         public Reconstructor(ChunkData[,] data, string name, ImageFormat format = null)
@@ -30,16 +33,15 @@ namespace Chunky.Shared
         /// </summary>
         /// <param name="targetPathDir">Optional save path dir. NOTE: has to point to a dir, since this will generate multiple bitmaps.</param>
         /// <returns>The reconstruction (element 0) as well as comparison/debugging bitmaps.</returns>
-        public Bitmap[] ReconstructAndCompare(string targetPathDir = null)
+        public Bitmap[] ReconstructAndCompare(Bitmap original, string targetPathDir = null)
         {
             List<Bitmap> result = new List<Bitmap>();
-            Bitmap reconstruction = Reconstruct(targetPathDir);
             
+            Bitmap reconstruction = Reconstruct(targetPathDir);
             result.Add(reconstruction);
 
-            _mode = ReconstructMode.ColorVariance;
-
-            //Bitmap varianceColored = Reconstruct(targetPathDir);
+            Bitmap varianceColored = CompareVariance(original, targetPathDir);
+            result.Add(varianceColored);
 
             return result.ToArray();
         }
@@ -130,19 +132,135 @@ namespace Chunky.Shared
                 }
             }
 
-            if (targetPathDir != null)
-            {
-                string mode = _mode != ReconstructMode.Normal ? "-" + _mode.ToString().ToLower() : "";
-                result.Save(
-                Path.Combine(targetPathDir, _name + "-reconstruction" + mode + Utils.FormatExtension(ImageFormat.Png)));
-            }
+            if (targetPathDir != null) 
+                result.Save(Path.Combine(targetPathDir, _name + "-reconstruction" + Utils.FormatExtension(ImageFormat.Png)));
+            _reconstruction = result;
             return result;
         }
-    }
 
-    public enum ReconstructMode
-    {
-        Normal,
-        ColorVariance
+        public Bitmap CompareVariance(Bitmap original, string targetPathDir = null)
+        {
+            Bitmap result = new Bitmap(original.Width, original.Height);
+            Bitmap reconstructino = _reconstruction;
+            
+            Rectangle rect = new Rectangle(0, 0, original.Width, original.Height);
+            
+            BitmapData originalData = original.LockBits(
+                rect, 
+                ImageLockMode.ReadOnly,
+                PixelFormat.Format32bppRgb);
+            BitmapData reconstructionData = reconstructino.LockBits(
+                rect, 
+                ImageLockMode.ReadOnly,
+                PixelFormat.Format32bppRgb);
+            BitmapData resultData = result.LockBits(
+                rect, 
+                ImageLockMode.ReadWrite,
+                PixelFormat.Format32bppRgb);
+                    
+            IntPtr originalPointer = originalData.Scan0;
+            IntPtr reconstructionPointer = reconstructionData.Scan0;
+            IntPtr resultPointer = resultData.Scan0;
+            
+            int bytes = originalData.Stride * originalData.Height;
+            byte[] originalRgbValues = new byte[bytes];
+            byte[] reconstructionRgbValues = new byte[bytes];
+            byte[] resultRgbValues = new byte[bytes];
+                
+            System.Runtime.InteropServices.Marshal.Copy(originalPointer, originalRgbValues, 0, bytes);
+            System.Runtime.InteropServices.Marshal.Copy(reconstructionPointer, reconstructionRgbValues, 0, bytes);
+            System.Runtime.InteropServices.Marshal.Copy(resultPointer, resultRgbValues, 0, bytes);
+
+            byte currR = 0;
+            byte diffR = 0;
+            byte diffG = 0;
+            byte diffB = 0;
+            byte diffA = 0;
+            byte byteIdx = 0;
+            
+            for (int i = 0; i < bytes; i++)
+            {
+                switch (byteIdx)
+                {
+                    // jesus these colors arent in ARGB or RGBA order, they are apparently BGRA.......................
+                    case 2:
+                        diffR = (byte) Math.Abs(originalRgbValues[i] - reconstructionRgbValues[i]);
+                        currR = reconstructionRgbValues[i];
+                        break;
+                    case 1:
+                        diffG = (byte) Math.Abs(originalRgbValues[i] - reconstructionRgbValues[i]);
+                        break;
+                    case 0:
+                        diffB = (byte) Math.Abs(originalRgbValues[i] - reconstructionRgbValues[i]);
+                        break;
+                    case 3:
+                    {
+                        diffA = (byte) Math.Abs(originalRgbValues[i] - reconstructionRgbValues[i]);
+                        byte avgDiff = (byte) ((diffR + diffG + diffB + diffA) / 4);
+                        //byte avgDiff = (byte) (diffR);
+
+                        if (avgDiff > 0)
+                        {
+                            /*
+                        resultRgbValues[i - 3] = 255;
+                        resultRgbValues[i - 2] = 0;
+                        resultRgbValues[i - 1] = 0;
+                        resultRgbValues[i] = originalRgbValues[i];
+                        */
+                        
+                            if (currR > _lighterThreshold)
+                            {
+                                resultRgbValues[i - 3] = (byte)(originalRgbValues[i - 3] - (avgDiff * _diffMultiplier));
+                                resultRgbValues[i - 2] = (byte)(originalRgbValues[i - 2] - (avgDiff * _diffMultiplier));
+                                resultRgbValues[i - 1] = (byte)(originalRgbValues[i - 1]);
+                                //resultRgbValues[i-3] = originalRgbValues[i-3];
+                                //resultRgbValues[i-2] = originalRgbValues[i-2];
+                                //resultRgbValues[i-1] = originalRgbValues[i-1];
+                                resultRgbValues[i] = originalRgbValues[i];
+                            }
+                            else
+                            {
+                                resultRgbValues[i - 3] = (byte)(originalRgbValues[i - 3]);
+                                resultRgbValues[i - 2] = (byte)(originalRgbValues[i - 2]);
+                                resultRgbValues[i - 1] = (byte)(originalRgbValues[i - 1] + (avgDiff * _diffMultiplier));
+                                //resultRgbValues[i-3] = originalRgbValues[i-3];
+                                //resultRgbValues[i-2] = originalRgbValues[i-2];
+                                //resultRgbValues[i-1] = originalRgbValues[i-1];
+                                resultRgbValues[i] = originalRgbValues[i];
+                            }
+                        }
+                        else
+                        {
+                            resultRgbValues[i-3] = originalRgbValues[i-3];
+                            resultRgbValues[i-2] = originalRgbValues[i-2];
+                            resultRgbValues[i-1] = originalRgbValues[i-1];
+                            resultRgbValues[i] = originalRgbValues[i];
+                        }
+                        byteIdx = 0;
+                        continue;
+                    }
+                }
+                byteIdx++;
+            }
+            
+            System.Runtime.InteropServices.Marshal.Copy(resultRgbValues, 0, resultPointer, bytes);
+            original.UnlockBits(originalData);
+            reconstructino.UnlockBits(reconstructionData);
+            result.UnlockBits(resultData);
+            
+            Console.WriteLine(reconstructino.GetPixel(500, 1200));
+            Console.WriteLine(original.GetPixel(500, 1200));
+            Console.WriteLine(result.GetPixel(500, 1200));
+            Console.WriteLine(reconstructino.GetPixel(800, 800));
+            Console.WriteLine(original.GetPixel(800, 800));
+            Console.WriteLine(result.GetPixel(800, 800));
+            Console.WriteLine(reconstructino.GetPixel(1200, 500));
+            Console.WriteLine(original.GetPixel(1200, 500));
+            Console.WriteLine(result.GetPixel(1200, 500));
+            
+            if (targetPathDir != null) 
+                result.Save(Path.Combine(targetPathDir, _name + "-reconstruction-variance" + Utils.FormatExtension(ImageFormat.Png)));
+            return result;
+        }
     }
 }

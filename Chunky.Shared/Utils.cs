@@ -17,15 +17,15 @@ namespace Chunky.Shared
             return "." + format.ToString().ToLower();
         }
 
-        public static string SolveAssemblyRootDir()
+        public static string SolveAssemblyRootDir(Assembly assembly)
         {
-            return Path.Combine(Assembly.GetCallingAssembly().Location
-                .Remove(Assembly.GetCallingAssembly().Location.Length - SolveDllName().Length));
+            return Path.Combine(assembly.Location
+                .Remove(assembly.Location.Length - SolveDllName(assembly).Length));
         }
 
-        public static string SolveDllName()
+        public static string SolveDllName(Assembly assembly)
         {
-            return Assembly.GetCallingAssembly().GetName().ToString().Split(',')[0] + ".dll";
+            return assembly.GetName().ToString().Split(',')[0] + ".dll";
         }
     }
 }

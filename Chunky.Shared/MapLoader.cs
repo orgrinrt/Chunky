@@ -8,13 +8,12 @@ namespace Chunky.Shared
     public class MapLoader
     {
         private string _pathToMap;
+        private Bitmap _originalBitmap;
         private byte[,] _map;
 
-        public byte[,] Map
-        {
-            get => _map;
-            set => _map = value;
-        }
+        
+        public Bitmap OriginalBitmap => _originalBitmap;
+        public byte[,] Map => _map;
 
         public MapLoader(string pathToMap)
         {
@@ -45,8 +44,10 @@ namespace Chunky.Shared
                 throw new Exception("Attempted to load a map without providing a path to the MapLoader");
             }
 
+            Console.WriteLine("PATH TO MAP: " + _pathToMap);
             Bitmap bitmap = new Bitmap(_pathToMap);
             bitmap.Save("Q:/test1.png");
+            _originalBitmap = bitmap;
             
             Bitmap newBmp = new Bitmap(Image.FromFile(_pathToMap));
 
