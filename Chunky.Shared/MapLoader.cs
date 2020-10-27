@@ -18,6 +18,8 @@ namespace Chunky.Shared
 
         public MapLoader(string pathToMap)
         {
+            // TODO: Make a Name property to the loader and "solve" the name here instead 
+            
             _pathToMap = pathToMap;
 
             Load();
