@@ -107,7 +107,7 @@ namespace Chunky.Shared
                         diffY = (short) ((short) ((y * chunkHeight) + chunkHeight) - _originalHeight);
                     else diffY = 0;
 
-                    // the below works but we'd rather juts skip having completely empty chunks in the buffer in the first place
+                    // the below line works but we'd rather juts skip having completely empty chunks in the buffer in the first place
                     //if (chunkBitmap.Width - diffX <= 0 || chunkBitmap.Height - diffY <= 0) continue;
                     
                     chunkRect = new Rectangle(0, 0, chunkWidth, chunkHeight);
