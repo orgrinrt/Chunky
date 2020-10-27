@@ -87,28 +87,42 @@ namespace Chunky.Shared
             short chunkWidth = 0;
             short chunkHeight = 0;
 
-            for (int x = 0; x < _data.GetLength(0) - 1; x++)
+            for (int x = 0; x < _data.GetLength(0); x++)
             {
-                for (int y = 0; y < _data.GetLength(1) - 1; y++)
+                for (int y = 0; y < _data.GetLength(1); y++)
                 {
-                    chunkBitmap = _data[x,y].Bitmap;
+                    chunkBitmap = _data[x, y].Bitmap;
 
                     if (chunkWidth == 0) chunkWidth = (short)chunkBitmap.Width;
                     if (chunkHeight == 0) chunkHeight = (short)chunkBitmap.Height;
 
-                    if (x == _data.GetLength(0) - 1) diffX = (short) ((short) ((x * chunkWidth) + chunkWidth) - _originalWidth);
-                    if (y == _data.GetLength(1) - 1) diffY = (short) ((short) ((y * chunkHeight) + chunkHeight) - _originalHeight);
+                    if (x == _data.GetLength(0) - 1)
+                        diffX = (short) ((short) ((x * chunkWidth) + chunkWidth) - _originalWidth);
+                    else diffX = 0;
+                    if (y == _data.GetLength(1) - 1)
+                        diffY = (short) ((short) ((y * chunkHeight) + chunkHeight) - _originalHeight);
+                    else diffY = 0;
+
+                    // the below works but we'd rather juts skip having completely empty chunks in the buffer in the first place
+                    //if (chunkBitmap.Width - diffX <= 0 || chunkBitmap.Height - diffY <= 0) continue;
                     
                     chunkRect = new Rectangle(0, 0, chunkWidth, chunkHeight);
                     
-                    rect = new Rectangle(x * chunkWidth, y * chunkHeight, chunkWidth - diffX, chunkHeight - diffY);
+                    
+                    rect = new Rectangle(x * chunkWidth, y * chunkHeight, 
+                        chunkBitmap.Width - diffX, 
+                        chunkBitmap.Height - diffY);
 
                     Console.WriteLine("-------");
-                    Console.WriteLine("X: " + x + ", Y: " + y);
+                    Console.WriteLine("X: " + x  + " / " + _data.GetLength(0) + ", Y: " + y + " / " + _data.GetLength(1));
                     Console.WriteLine("X DIFF: " + diffX);
                     Console.WriteLine("Y DIFF: " + diffY);
-                    Console.WriteLine("X LENGTH " + ((x * chunkWidth + chunkWidth) - diffX));
-                    Console.WriteLine("Y LENGTH " + ((y * chunkHeight + chunkHeight) - diffY));
+                    Console.WriteLine("X BOB: " + chunkBitmap.Width);
+                    Console.WriteLine("Y BOB: " + chunkBitmap.Height);
+                    Console.WriteLine("THEORY X LENGTH " + ((x * chunkWidth + chunkWidth) - diffX));
+                    Console.WriteLine("THEORY Y LENGTH " + ((y * chunkHeight + chunkHeight) - diffY));
+                    Console.WriteLine("ACTUAL X LENGTH " + ((x * chunkWidth + chunkBitmap.Width)));
+                    Console.WriteLine("ACTUAL Y LENGTH " + ((y * chunkHeight + chunkBitmap.Height)));
                     Console.WriteLine("RESULT X LENGTH: " + result.Width);
                     Console.WriteLine("RESULT Y LENGTH: " + result.Height);
                     

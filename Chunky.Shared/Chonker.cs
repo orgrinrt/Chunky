@@ -134,6 +134,7 @@ namespace Chunky.Shared
             else
             {
                 _chunkCountX = (short)Math.Ceiling((double) (width / _chunkWidth));
+                _chunkCountX++;
             }
             
             if (height % _chunkHeight == 0)
@@ -145,11 +146,10 @@ namespace Chunky.Shared
             else
             {
                 _chunkCountY = (short)Math.Ceiling((double) (height / _chunkHeight));
+                _chunkCountY++;
             }
 
             // we can safely add extra buffer since we use original dimensions for reconstruction
-            _chunkCountX++;
-            _chunkCountY++;
             
             Console.WriteLine("SOLVED CHUNKXCOUNT: " + _chunkCountX);
             Console.WriteLine("     Total width: " + _chunkCountX * _chunkWidth);
