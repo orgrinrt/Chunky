@@ -66,6 +66,8 @@ namespace Chunky.Shared
             //throw new Exception();
             _map = new ColorRgba[bitmap.Width, bitmap.Height];
 
+            // TODO: We could karate-kick each x-row in a separate task for multi-threading nonsense
+            
             for (int x = 0; x < bitmap.Width; x++)
             {
                 for (int y = 0; y < bitmap.Height; y++)

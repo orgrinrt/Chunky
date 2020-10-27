@@ -46,6 +46,8 @@ namespace Chunky.Shared
             
             short originX, originY;
 
+            // TODO: We should definitely chonk-a-bonk each chunk in a separate task for multithreading experience
+            
             for (int x = 0; x < _chunkCountX; x++)
             {
                 for (int y = 0; y < _chunkCountY; y++)

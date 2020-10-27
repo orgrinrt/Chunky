@@ -89,6 +89,8 @@ namespace Chunky.Shared
             short chunkWidth = 0;
             short chunkHeight = 0;
 
+            // TODO: Verily I say unto you, thou musteth many-a-thread this below dong-a-long per a chonk
+
             for (int x = 0; x < _data.GetLength(0); x++)
             {
                 for (int y = 0; y < _data.GetLength(1); y++)
