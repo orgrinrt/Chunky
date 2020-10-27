@@ -59,6 +59,8 @@ namespace Chunky.Shared
         /// <returns>The reconstruction</returns>
         public Bitmap Reconstruct(string targetPathDir = null)
         {
+            // TODO: I did poopy. Please take the time to revisit and rewrite this whole mess. (it does work as-is so, uh, "soon")
+        
             // we assume that each chonky-chonk is uniform in size
             // wouldn't be hard to make it go through each individually but that's just overhead we don't need since it chonks gud
             /*Bitmap result = new Bitmap(

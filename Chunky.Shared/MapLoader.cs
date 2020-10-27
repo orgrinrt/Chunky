@@ -68,7 +68,7 @@ namespace Chunky.Shared
             {
                 for (int y = 0; y < bitmap.Height; y++)
                 {
-                    int avg = ((bitmap.GetPixel(x, y).R + bitmap.GetPixel(x, y).G + bitmap.GetPixel(x, y).B) / 3);
+                    //int avg = ((bitmap.GetPixel(x, y).R + bitmap.GetPixel(x, y).G + bitmap.GetPixel(x, y).B) / 3);
 
                     //Console.WriteLine(avg);
                     //Console.WriteLine("R: " + bitmap.GetPixel(x, y).R);
@@ -76,11 +76,13 @@ namespace Chunky.Shared
                     //Console.WriteLine("B: " + bitmap.GetPixel(x, y).B);
                     //Console.WriteLine("----------");
                     //Console.WriteLine(bitmap.GetPixel(x, y).R);
+                    
+                    // TODO: Replace the GetPixel calls with the marshalled alternative (or better yet, find a better solution altogether)
                     _map[x, y] = new ColorRgba(
-                    bitmap.GetPixel(x, y).R,
-                    bitmap.GetPixel(x, y).G,
-                    bitmap.GetPixel(x, y).B,
-                    bitmap.GetPixel(x, y).A
+                        bitmap.GetPixel(x, y).R,
+                        bitmap.GetPixel(x, y).G,
+                        bitmap.GetPixel(x, y).B,
+                        bitmap.GetPixel(x, y).A
                     );
                 }
             }

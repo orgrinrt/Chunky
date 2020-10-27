@@ -15,7 +15,7 @@ namespace Chunky
             string testMapPath = Path.Combine(assetsDir, "colorscene.png");
             Console.WriteLine(testMapPath);
             MapLoader loader = new MapLoader(testMapPath);
-            Chonker chonker = new Chonker(loader.Map, 256, 256);
+            Chonker chonker = new Chonker(loader.Map, 410, 225);
             SaveResultToDisk(chonker.GenerateChunks(), Path.Combine(assetsDir, "Result"), "testmap", loader.OriginalBitmap);
         }
 
