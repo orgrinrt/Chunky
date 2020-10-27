@@ -7,7 +7,7 @@ namespace Chunky.Shared
 {
     public class Chonker
     {
-        private byte[,] _map;
+        private ColorRgba[,] _map;
         private int _chunkWidth;
         private int _chunkHeight;
         private short _chunkCountX;
@@ -15,7 +15,7 @@ namespace Chunky.Shared
         private bool _needsXFilling = true;
         private bool _needsYFilling = true;
 
-        public Chonker(byte[,] map, int chunkWidth, int chunkHeight)
+        public Chonker(ColorRgba[,] map, int chunkWidth, int chunkHeight)
         {
             _map = map;
             _chunkWidth = chunkWidth;
@@ -24,7 +24,7 @@ namespace Chunky.Shared
             SolveChunkDimensionalCount();
         }
 
-        public Chonker(byte[,] map, short chunkCountX, short chunkCountY)
+        public Chonker(ColorRgba[,] map, short chunkCountX, short chunkCountY)
         {
             _map = map;
             _chunkCountX = chunkCountX;
@@ -76,8 +76,26 @@ namespace Chunky.Shared
                             //Console.WriteLine("X: " + ((cy - originY) + 1) + ", Y: " + (cx - originX));
                             for (int i = 0; i < 4; i++)
                             {
-                                if (index > bytes - 1) break;
-                                rgbValues[index] = _map[cx, cy];
+                                if (index > bytes - 1 ||
+                                    cx > _map.GetLength(0) - 1 ||
+                                    cy > _map.GetLength(1) - 1) break;
+
+                                switch (i)
+                                {
+                                    case 0:
+                                        rgbValues[index] = _map[cx, cy].B;
+                                        break;
+                                    case 1:
+                                        rgbValues[index] = _map[cx, cy].G;
+                                        break;
+                                    case 2:
+                                    rgbValues[index] = _map[cx, cy].R;
+                                        break;
+                                    case 3:
+                                        rgbValues[index] = _map[cx, cy].A;
+                                        break;
+                                }
+                                
                                 index++;
                             }
                         }
@@ -109,6 +127,7 @@ namespace Chunky.Shared
 
             if (width % _chunkWidth == 0)
             {
+            Console.WriteLine("NO REMAINDER FOR X");
                 _chunkCountX = (short)(width / _chunkWidth);
                 xExact = true;
             }
@@ -119,6 +138,7 @@ namespace Chunky.Shared
             
             if (height % _chunkHeight == 0)
             {
+                Console.WriteLine("NO REMAINDER FOR Y");
                 _chunkCountY = (short)(height / _chunkHeight);
                 yExact = true;
             }
@@ -127,7 +147,32 @@ namespace Chunky.Shared
                 _chunkCountY = (short)Math.Ceiling((double) (height / _chunkHeight));
             }
 
+            // we can safely add extra buffer since we use original dimensions for reconstruction
+            _chunkCountX++;
+            _chunkCountY++;
+            
+            Console.WriteLine("SOLVED CHUNKXCOUNT: " + _chunkCountX);
+            Console.WriteLine("     Total width: " + _chunkCountX * _chunkWidth);
+            Console.WriteLine("SOLVED CHUNKYOUNT: " + _chunkCountY);
+            Console.WriteLine("     Total height: " + _chunkCountY * _chunkHeight);
+
             if (xExact && yExact) return;
+        }
+    }
+
+    public struct ColorRgba
+    {
+        public byte R { get; private set; }
+        public byte G { get; private set; }
+        public byte B { get; private set; }
+        public byte A { get; private set; }
+
+        public ColorRgba(byte r, byte g, byte b, byte a)
+        {
+            R = r;
+            G = g;
+            B = b;
+            A = a;
         }
     }
 }

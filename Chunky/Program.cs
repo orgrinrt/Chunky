@@ -12,14 +12,14 @@ namespace Chunky
         static void Main(string[] args)
         {
             string assetsDir = Path.Combine(Utils.SolveAssemblyRootDir(Assembly.GetCallingAssembly()), "Assets");
-            string testMapPath = Path.Combine(assetsDir, "testmap.png");
+            string testMapPath = Path.Combine(assetsDir, "colorscene.png");
             Console.WriteLine(testMapPath);
             MapLoader loader = new MapLoader(testMapPath);
             Chonker chonker = new Chonker(loader.Map, 256, 256);
             SaveResultToDisk(chonker.GenerateChunks(), Path.Combine(assetsDir, "Result"), "testmap", loader.OriginalBitmap);
         }
 
-        private static void SaveResultToDisk(ChunkData[,] result, string targetDir, string name, Bitmap original = null)
+        private static void SaveResultToDisk(ChunkData[,] result, string targetDir, string name, Bitmap original)
         {
             Directory.CreateDirectory(targetDir);
             ChunkData chunk;
@@ -35,16 +35,10 @@ namespace Chunky
                 }
             }
 
-            Reconstructor reconstructor = new Reconstructor(result, name);
+            Reconstructor reconstructor = new Reconstructor(result, name, (short)original.Width, (short)original.Height);
             
-            if (original != null)
-            {
-                reconstructor.ReconstructAndCompare(original, targetDir);
-            }
-            else
-            {
-                reconstructor.Reconstruct(targetDir);
-            }
+            reconstructor.ReconstructAndCompare(original, targetDir);
+            //reconstructor.Reconstruct(targetDir);
         }
 
         private static void ParseArgs(string[] args)

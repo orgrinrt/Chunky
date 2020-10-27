@@ -11,7 +11,13 @@
 
     <ItemGroup>
       <None Remove="Assets\testmap.png" />
-      <Content Include="Assets\testmap.png">
+      <Resource Include="Assets\testmap.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Assets\colorscene.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

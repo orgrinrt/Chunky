@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 
 namespace Chunky.Shared
 {
@@ -9,11 +10,11 @@ namespace Chunky.Shared
     {
         private string _pathToMap;
         private Bitmap _originalBitmap;
-        private byte[,] _map;
+        private ColorRgba[,] _map;
 
         
         public Bitmap OriginalBitmap => _originalBitmap;
-        public byte[,] Map => _map;
+        public ColorRgba[,] Map => _map;
 
         public MapLoader(string pathToMap)
         {
@@ -31,13 +32,13 @@ namespace Chunky.Shared
         /// A public Load method for re-using same instance for multiple jobs
         /// </summary>
         /// <param name="pathToMap">A path to the source image</param>
-        public byte[,] Load(string pathToMap)
+        public ColorRgba[,] Load(string pathToMap)
         {
             _pathToMap = pathToMap;
             return Load();
         }
 
-        private byte[,] Load()
+        private ColorRgba[,] Load()
         {
             if (String.IsNullOrEmpty(_pathToMap))
             {    
@@ -49,7 +50,8 @@ namespace Chunky.Shared
             bitmap.Save("Q:/test1.png");
             _originalBitmap = bitmap;
             
-            Bitmap newBmp = new Bitmap(Image.FromFile(_pathToMap));
+            //Bitmap newBmp = new Bitmap(Image.FromFile(_pathToMap));
+            Bitmap newBmp = new Bitmap(bitmap);
 
             bitmap = newBmp.Clone(
                 new Rectangle(0, 0, newBmp.Width, newBmp.Height),
@@ -60,7 +62,7 @@ namespace Chunky.Shared
             //Console.WriteLine(bitmap.GetPixel(600, 1250).R);
 
             //throw new Exception();
-            _map = new byte[bitmap.Width, bitmap.Height];
+            _map = new ColorRgba[bitmap.Width, bitmap.Height];
 
             for (int x = 0; x < bitmap.Width; x++)
             {
@@ -74,7 +76,12 @@ namespace Chunky.Shared
                     //Console.WriteLine("B: " + bitmap.GetPixel(x, y).B);
                     //Console.WriteLine("----------");
                     //Console.WriteLine(bitmap.GetPixel(x, y).R);
-                    _map[x, y] = bitmap.GetPixel(x, y).R;
+                    _map[x, y] = new ColorRgba(
+                    bitmap.GetPixel(x, y).R,
+                    bitmap.GetPixel(x, y).G,
+                    bitmap.GetPixel(x, y).B,
+                    bitmap.GetPixel(x, y).A
+                    );
                 }
             }
 
