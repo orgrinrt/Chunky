@@ -11,10 +11,7 @@ namespace Chunky
     {
         static void Main(string[] args)
         {
-            string dllName = Assembly.GetCallingAssembly().GetName().ToString().Split(',')[0] + ".dll";
-            string rootDir = Path.Combine(Assembly.GetCallingAssembly().Location
-                .Remove(Assembly.GetCallingAssembly().Location.Length - dllName.Length));
-            string assetsDir = Path.Combine(rootDir, "Assets");
+            string assetsDir = Path.Combine(Utils.SolveAssemblyRootDir(), "Assets");
             string testMapPath = Path.Combine(assetsDir, "testmap.png");
             Console.WriteLine(testMapPath);
             MapLoader loader = new MapLoader(testMapPath);
@@ -38,7 +35,7 @@ namespace Chunky
                 }
             }
 
-            Reconstructor reconstructor = new Reconstructor(result);
+            Reconstructor reconstructor = new Reconstructor(result, name);
             reconstructor.Reconstruct(Path.Combine(targetDir, name + "-" + "reconstruct.png"));
         }
 

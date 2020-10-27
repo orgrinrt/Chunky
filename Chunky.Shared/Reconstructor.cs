@@ -1,27 +1,56 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 
 namespace Chunky.Shared
 {
     public class Reconstructor
     {
+        private string _name;
+        private ImageFormat _format;
         private ChunkData[,] _data;
+        private ReconstructMode _mode = ReconstructMode.Normal;
         
         public ChunkData[,] Data => _data;
 
-        public Reconstructor(ChunkData[,] data)
+        public Reconstructor(ChunkData[,] data, string name, ImageFormat format = null)
         {
+            _name = name;
             _data = data;
+            if (format == null) _format = ImageFormat.Png;
+        }
+
+        /// <summary>
+        /// A little bit heftier version of Reconstruct, that also generates some exports to compare the resulting reconstruction
+        /// against the original pixel by pixel. Should allow for easier dev time but also give sanity points to anyone
+        /// anxious about using the program (i.e they can set the flag to also generate and export the comparisons and see
+        /// how close the chunks are to the original).
+        /// </summary>
+        /// <param name="targetPathDir">Optional save path dir. NOTE: has to point to a dir, since this will generate multiple bitmaps.</param>
+        /// <returns>The reconstruction (element 0) as well as comparison/debugging bitmaps.</returns>
+        public Bitmap[] ReconstructAndCompare(string targetPathDir = null)
+        {
+            List<Bitmap> result = new List<Bitmap>();
+            Bitmap reconstruction = Reconstruct(targetPathDir);
+            
+            result.Add(reconstruction);
+
+            _mode = ReconstructMode.ColorVariance;
+
+            //Bitmap varianceColored = Reconstruct(targetPathDir);
+
+            return result.ToArray();
         }
 
         /// <summary>
         /// Reconstructs the resulting chonkyarray back to a wholy-whole pic-pic
         /// Takes in an optional path that also saves the resulting reconstruction in same pass
         /// </summary>
-        /// <param name="targetPath">Optional save path</param>
+        /// <param name="targetPath">Optional save path dir. NOTE: has to point to a dir, since this will generate multiple bitmaps.</param>
         /// <returns>The reconstruction</returns>
-        public Bitmap Reconstruct(string targetPath = null)
+        public Bitmap Reconstruct(string targetPathDir = null)
         {
             // we assume that each chonky-chonk is uniform in size
             // wouldn't be hard to make it go through each individually but that's just overhead we don't need since it chonks gud
@@ -101,8 +130,19 @@ namespace Chunky.Shared
                 }
             }
 
-            if (targetPath != null) result.Save(targetPath, ImageFormat.Png);
+            if (targetPathDir != null)
+            {
+                string mode = _mode != ReconstructMode.Normal ? "-" + _mode.ToString().ToLower() : "";
+                result.Save(
+                Path.Combine(targetPathDir, _name + "-reconstruction" + mode + Utils.FormatExtension(ImageFormat.Png)));
+            }
             return result;
         }
+    }
+
+    public enum ReconstructMode
+    {
+        Normal,
+        ColorVariance
     }
 }
