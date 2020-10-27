@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chunky", "Chunky\Chunky.csproj", "{DA759A4B-8CD2-41E8-BE1F-9255448269AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chunky.Shared", "Chunky.Shared\Chunky.Shared.csproj", "{A3644DFA-34C4-4AF0-AAC5-6317621CFE28}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA759A4B-8CD2-41E8-BE1F-9255448269AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA759A4B-8CD2-41E8-BE1F-9255448269AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA759A4B-8CD2-41E8-BE1F-9255448269AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA759A4B-8CD2-41E8-BE1F-9255448269AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3644DFA-34C4-4AF0-AAC5-6317621CFE28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3644DFA-34C4-4AF0-AAC5-6317621CFE28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3644DFA-34C4-4AF0-AAC5-6317621CFE28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3644DFA-34C4-4AF0-AAC5-6317621CFE28}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
