@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Chunky.Shared
 {
@@ -44,14 +46,34 @@ namespace Chunky.Shared
             }
 
             Bitmap bitmap = new Bitmap(_pathToMap);
+            bitmap.Save("Q:/test1.png");
+            
+            Bitmap newBmp = new Bitmap(Image.FromFile(_pathToMap));
+
+            bitmap = newBmp.Clone(
+                new Rectangle(0, 0, newBmp.Width, newBmp.Height),
+                PixelFormat.Format32bppRgb);
+            
+            bitmap.Save("Q:/test2.png");
+
+            //Console.WriteLine(bitmap.GetPixel(600, 1250).R);
+
+            //throw new Exception();
+            _map = new byte[bitmap.Width, bitmap.Height];
 
             for (int x = 0; x < bitmap.Width; x++)
             {
                 for (int y = 0; y < bitmap.Height; y++)
                 {
-                    byte avg = (byte)((bitmap.GetPixel(x, y).R + bitmap.GetPixel(x, y).G + bitmap.GetPixel(x, y).B) / 3);
+                    int avg = ((bitmap.GetPixel(x, y).R + bitmap.GetPixel(x, y).G + bitmap.GetPixel(x, y).B) / 3);
 
-                    _map[x, y] = avg;
+                    //Console.WriteLine(avg);
+                    //Console.WriteLine("R: " + bitmap.GetPixel(x, y).R);
+                    //Console.WriteLine("G: " + bitmap.GetPixel(x, y).G);
+                    //Console.WriteLine("B: " + bitmap.GetPixel(x, y).B);
+                    //Console.WriteLine("----------");
+                    //Console.WriteLine(bitmap.GetPixel(x, y).R);
+                    _map[x, y] = bitmap.GetPixel(x, y).R;
                 }
             }
 

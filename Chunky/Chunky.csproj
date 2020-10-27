@@ -6,4 +6,8 @@
         <LangVersion>9</LangVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Chunky.Shared\Chunky.Shared.csproj" />
+    </ItemGroup>
+
 </Project>
