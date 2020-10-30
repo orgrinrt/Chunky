@@ -50,7 +50,7 @@ namespace Chunky.Shared
             
             for (int i = 0; i < split.Length - 1; i++)
             {
-                result += split[i];
+                result = Path.Combine(result, split[i]);
             }
 
             return result;
