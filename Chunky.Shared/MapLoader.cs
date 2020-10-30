@@ -23,7 +23,7 @@ namespace Chunky.Shared
         
         private ColorRgba32bit[,] Load()
         {
-            if (String.IsNullOrEmpty(_pathToMap)) throw new Exception("Attempted to load a map without providing a path to the MapLoader");
+            if (String.IsNullOrEmpty(_pathToMap)) throw new Exception("Attempted to load a map without providing a path for the MapLoader");
 
             _originalBitmap = new Bitmap(_pathToMap);
             _map = new ColorRgba32bit[_originalBitmap.Width, _originalBitmap.Height];
