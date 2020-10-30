@@ -55,5 +55,12 @@ namespace Chunky.Shared
 
             return result;
         }
+
+        public static string SolveImageExtensionFromFileName(string fileName)
+        {
+            string[] split = fileName.Split('.');
+
+            return split[split.Length - 1];
+        }
     }
 }
