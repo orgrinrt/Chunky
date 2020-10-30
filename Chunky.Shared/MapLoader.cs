@@ -10,7 +10,7 @@ namespace Chunky.Shared
     {
         private string _pathToMap;
         private Bitmap _originalBitmap;
-        private ColorRgba32bit[,] _map;
+        private ColorRgba32bit[,] _map; // TODO: Probably not worth it to wrap it to a 2d map and unwrap on each operation... So maybe rewrite
         
         public Bitmap OriginalBitmap => _originalBitmap;
         public ColorRgba32bit[,] Map => _map;
