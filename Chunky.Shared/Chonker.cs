@@ -59,6 +59,10 @@ namespace Chunky.Shared
         
         public ChunkData[,] GenerateChunks()
         {
+            Console.WriteLine("CHUNKWIDTH: " + _chunkWidth);
+            Console.WriteLine("CHUNKHEIGHT: " + _chunkHeight);
+            Console.WriteLine("CHUNK COUNTX " + _chunkCountX);
+            Console.WriteLine("CHUNK COUNTY: " + _chunkCountY);
             ChunkData[,] result = new ChunkData[_chunkCountX, _chunkCountY];
             
             short originX, originY;
@@ -75,9 +79,9 @@ namespace Chunky.Shared
                     Bitmap bitmap = new Bitmap(_chunkWidth, _chunkHeight, PixelFormat.Format32bppRgb);
                     Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
                     
-                    System.Drawing.Imaging.BitmapData data = bitmap.LockBits(
+                    BitmapData data = bitmap.LockBits(
                         rect, 
-                        System.Drawing.Imaging.ImageLockMode.ReadWrite,
+                        ImageLockMode.ReadWrite,
                         PixelFormat.Format32bppRgb);
                     
                     IntPtr ptr = data.Scan0;
@@ -133,12 +137,14 @@ namespace Chunky.Shared
 
         private void SolveChunkSize()
         {
+            Console.WriteLine("SOLVE CHUNK SIZE");
             if (_chunkCountX != default) _chunkWidth = _map.GetLength(0) / _chunkCountX;
             if (_chunkCountY != default) _chunkHeight = _map.GetLength(1) / _chunkCountY;
         }
 
         private void SolveChunkDimensionalCount()
         {
+            Console.WriteLine("SOLVE CHUNK DIMENSIONAL COUNT");
             short width = (short)_map.GetLength(0);
             short height = (short) _map.GetLength(1);
 
