@@ -29,7 +29,7 @@ namespace Chunky.Shared
             
             if (string.IsNullOrEmpty(config.SourcePath)) throw new Exception("Attempted to pass a faulty config (source path missing)");
             if (string.IsNullOrEmpty(config.Name)) name = Utils.SolveNameFromFileName(config.SourcePath);
-            if (string.IsNullOrEmpty(config.TargetDir)) targetDir = Path.Combine(Utils.SolveDirFromFileName(config.SourcePath), name);
+            if (string.IsNullOrEmpty(config.TargetDir)) targetDir = Path.Combine(Utils.SolveDirFromFileName(config.SourcePath), "Results");
 
             _originalBitmap = new Bitmap(config.SourcePath);
             _originalPixelFormat = _originalBitmap.PixelFormat;
@@ -40,7 +40,13 @@ namespace Chunky.Shared
                 Name = name,
                 TargetDir = targetDir,
                 TargetImageType = config.TargetImageType ?? Utils.SolveImageExtensionFromFileName(config.SourcePath),
-                TargetPixelFormat = config.TargetPixelFormat != default ? config.TargetPixelFormat : _originalPixelFormat
+                TargetPixelFormat = config.TargetPixelFormat != default ? config.TargetPixelFormat : _originalPixelFormat,
+                ChunkCountX = config.ChunkCountX,
+                ChunkCountY = config.ChunkCountY,
+                ChunkWidth = config.ChunkWidth,
+                ChunkHeight = config.ChunkHeight,
+                MinDepth = config.MinDepth,
+                MaxDepth = config.MaxDepth
             };
         }
 
@@ -51,18 +57,22 @@ namespace Chunky.Shared
             // we always use the width & height when available (i.e not default (=0))
             if (Config.ChunkWidth != default && Config.ChunkHeight != default)
             {
-                chonker = new Chonker(loader.Map, (int)Config.ChunkWidth, (int)Config.ChunkHeight);
+                Console.WriteLine("CHONKER USES WIDTH & HEIGHT");
+                chonker = new Chonker(loader.Map, Config.ChunkWidth, Config.ChunkHeight);
             }
             else if (Config.ChunkWidth != default)
             {
-                chonker = new Chonker(loader.Map, (int)Config.ChunkWidth, Config.ChunkCountY);
+                Console.WriteLine("CHONKER USES WIDTH & CHUNK COUNT Y");
+                chonker = new Chonker(loader.Map, Config.ChunkWidth, Config.ChunkCountY);
             }
             else if (Config.ChunkHeight != default)
             {
-                chonker = new Chonker(loader.Map, Config.ChunkCountX, (int)Config.ChunkHeight);
+                Console.WriteLine("CHONKER USES CHUNK COUNT X & HEIGHT");
+                chonker = new Chonker(loader.Map, Config.ChunkCountX, Config.ChunkHeight);
             }
             else
             {
+                Console.WriteLine("CHONKER USES CHUNK COUNT X & CHUNK COUNT Y");
                 chonker = new Chonker(loader.Map, Config.ChunkCountX, Config.ChunkCountY);
             }
             
