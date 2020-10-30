@@ -31,7 +31,21 @@ namespace Chunky.Shared
 
         public static string SolveNameFromFileName(string fileName)
         {
-            string[] split = fileName.Split('.');
+            string[] init = fileName.Split('/', '\\');
+            string[] split = init[init.Length - 1].Split('.');
+            string result = "";
+            
+            for (int i = 0; i < split.Length - 1; i++)
+            {
+                result += split[i];
+            }
+
+            return result;
+        }
+
+        public static string SolveDirFromFileName(string fileName)
+        {
+            string[] split = fileName.Split('/', '\\');
             string result = "";
             
             for (int i = 0; i < split.Length - 1; i++)
