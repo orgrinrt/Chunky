@@ -63,7 +63,7 @@ namespace Chunky.Shared
             Console.WriteLine("CHUNK COUNTY: " + _chunkCountY);*/
             _processedChunks = new ChunkData[_chunkCountX, _chunkCountY];
             _totalChunkCount = _chunkCountX * _chunkCountY;
-            int _processedCount = 0;
+            int processedCount = 0;
             object countLock = new object();
             
             for (int x = 0; x < _chunkCountX; x++)
@@ -78,13 +78,13 @@ namespace Chunky.Shared
                     Thread thread = new Thread(() =>
                     {
                         _processedChunks[x1, y1] = GenerateChunk(x1, y1);
-                        lock (countLock) _processedCount++;
+                        lock (countLock) processedCount++;
                     });
                     thread.Start();
                 }
             }
             
-            while (_processedCount < _totalChunkCount) { }
+            while (processedCount < _totalChunkCount) { }
 
             return _processedChunks;
         }
