@@ -12,8 +12,6 @@ namespace Chunky.Shared
         private int _chunkHeight;
         private short _chunkCountX;
         private short _chunkCountY;
-        private bool _needsXFilling = true;
-        private bool _needsYFilling = true;
 
         public Chonker(ColorRgba[,] map, int chunkWidth, int chunkHeight)
         {
@@ -23,13 +21,32 @@ namespace Chunky.Shared
 
             SolveChunkDimensionalCount();
         }
-
         public Chonker(ColorRgba[,] map, short chunkCountX, short chunkCountY)
         {
             _map = map;
             _chunkCountX = chunkCountX;
             _chunkCountY = chunkCountY;
 
+            SolveChunkSize();
+        }
+        
+        public Chonker(ColorRgba[,] map, short chunkCountX, int chunkHeight)
+        {
+            _map = map;
+            _chunkCountX = chunkCountX;
+            _chunkHeight = chunkHeight;
+
+            SolveChunkDimensionalCount();
+            SolveChunkSize();
+        }
+        
+        public Chonker(ColorRgba[,] map, int chunkHeight, short chunkCountY)
+        {
+            _map = map;
+            _chunkCountY = chunkCountY;
+            _chunkHeight = chunkHeight;
+
+            SolveChunkDimensionalCount();
             SolveChunkSize();
         }
         
@@ -116,49 +133,41 @@ namespace Chunky.Shared
 
         private void SolveChunkSize()
         {
-            _chunkWidth = _map.GetLength(0) / _chunkCountX;
-            _chunkHeight = _map.GetLength(1) / _chunkCountY;
+            if (_chunkCountX != default) _chunkWidth = _map.GetLength(0) / _chunkCountX;
+            if (_chunkCountY != default) _chunkHeight = _map.GetLength(1) / _chunkCountY;
         }
 
         private void SolveChunkDimensionalCount()
         {
             short width = (short)_map.GetLength(0);
             short height = (short) _map.GetLength(1);
-            bool xExact = false;
-            bool yExact = false;
 
-            if (width % _chunkWidth == 0)
+            if (_chunkWidth != default)
             {
-            Console.WriteLine("NO REMAINDER FOR X");
-                _chunkCountX = (short)(width / _chunkWidth);
-                xExact = true;
+                if (width % _chunkWidth == 0)
+                {
+                    Console.WriteLine("NO REMAINDER FOR X");
+                    _chunkCountX = (short)(width / _chunkWidth);
+                }
+                else
+                {
+                    _chunkCountX = (short)Math.Ceiling((double) (width / _chunkWidth));
+                    _chunkCountX++; // add an extra buffer for safety
+                }
             }
-            else
+            if (_chunkHeight != default)
             {
-                _chunkCountX = (short)Math.Ceiling((double) (width / _chunkWidth));
-                _chunkCountX++;
+                if (height % _chunkHeight == 0)
+                {
+                    Console.WriteLine("NO REMAINDER FOR Y");
+                    if (_chunkHeight != default) _chunkCountY = (short)(height / _chunkHeight);
+                }
+                else
+                {
+                    _chunkCountY = (short)Math.Ceiling((double) (height / _chunkHeight));
+                    _chunkCountY++; // add an extra buffer for safety
+                }
             }
-            
-            if (height % _chunkHeight == 0)
-            {
-                Console.WriteLine("NO REMAINDER FOR Y");
-                _chunkCountY = (short)(height / _chunkHeight);
-                yExact = true;
-            }
-            else
-            {
-                _chunkCountY = (short)Math.Ceiling((double) (height / _chunkHeight));
-                _chunkCountY++;
-            }
-
-            // we can safely add extra buffer since we use original dimensions for reconstruction
-            
-            Console.WriteLine("SOLVED CHUNKXCOUNT: " + _chunkCountX);
-            Console.WriteLine("     Total width: " + _chunkCountX * _chunkWidth);
-            Console.WriteLine("SOLVED CHUNKYOUNT: " + _chunkCountY);
-            Console.WriteLine("     Total height: " + _chunkCountY * _chunkHeight);
-
-            if (xExact && yExact) return;
         }
     }
 }
