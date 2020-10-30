@@ -10,10 +10,10 @@ namespace Chunky.Shared
     {
         private string _pathToMap;
         private Bitmap _originalBitmap;
-        private ColorRgba[,] _map;
+        private ColorRgba32bit[,] _map;
         
         public Bitmap OriginalBitmap => _originalBitmap;
-        public ColorRgba[,] Map => _map;
+        public ColorRgba32bit[,] Map => _map;
 
         public MapLoader(string pathToMap)
         {
@@ -21,12 +21,12 @@ namespace Chunky.Shared
             Load();
         }
         
-        private ColorRgba[,] Load()
+        private ColorRgba32bit[,] Load()
         {
             if (String.IsNullOrEmpty(_pathToMap)) throw new Exception("Attempted to load a map without providing a path to the MapLoader");
 
             _originalBitmap = new Bitmap(_pathToMap);
-            _map = new ColorRgba[_originalBitmap.Width, _originalBitmap.Height];
+            _map = new ColorRgba32bit[_originalBitmap.Width, _originalBitmap.Height];
             
             BitmapData data = _originalBitmap.LockBits(
                 new Rectangle(0, 0, _originalBitmap.Width, _originalBitmap.Height), 
@@ -44,7 +44,7 @@ namespace Chunky.Shared
             {
                 for (int x = 0; x < _originalBitmap.Width; x++)
                 {
-                    _map[x, y] = new ColorRgba(
+                    _map[x, y] = new ColorRgba32bit(
                         rgbValues[byteIdx+2],
                         rgbValues[byteIdx+1],
                         rgbValues[byteIdx],
@@ -63,7 +63,7 @@ namespace Chunky.Shared
         /// A public Load method for re-using same instance for multiple jobs
         /// </summary>
         /// <param name="pathToMap">A path to the source image</param>
-        public ColorRgba[,] Load(string pathToMap)
+        public ColorRgba32bit[,] Load(string pathToMap)
         {
             _pathToMap = pathToMap;
             return Load();

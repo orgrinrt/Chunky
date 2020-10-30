@@ -7,13 +7,13 @@ namespace Chunky.Shared
 {
     public class Chonker
     {
-        private ColorRgba[,] _map;
+        private ColorRgba32bit[,] _map;
         private int _chunkWidth;
         private int _chunkHeight;
         private short _chunkCountX;
         private short _chunkCountY;
 
-        public Chonker(ColorRgba[,] map, int chunkWidth, int chunkHeight)
+        public Chonker(ColorRgba32bit[,] map, int chunkWidth, int chunkHeight)
         {
             _map = map;
             _chunkWidth = chunkWidth;
@@ -21,7 +21,7 @@ namespace Chunky.Shared
 
             SolveChunkDimensionalCount();
         }
-        public Chonker(ColorRgba[,] map, short chunkCountX, short chunkCountY)
+        public Chonker(ColorRgba32bit[,] map, short chunkCountX, short chunkCountY)
         {
             _map = map;
             _chunkCountX = chunkCountX;
@@ -30,7 +30,7 @@ namespace Chunky.Shared
             SolveChunkSize();
         }
         
-        public Chonker(ColorRgba[,] map, short chunkCountX, int chunkHeight)
+        public Chonker(ColorRgba32bit[,] map, short chunkCountX, int chunkHeight)
         {
             _map = map;
             _chunkCountX = chunkCountX;
@@ -40,7 +40,7 @@ namespace Chunky.Shared
             SolveChunkSize();
         }
         
-        public Chonker(ColorRgba[,] map, int chunkHeight, short chunkCountY)
+        public Chonker(ColorRgba32bit[,] map, int chunkHeight, short chunkCountY)
         {
             _map = map;
             _chunkCountY = chunkCountY;
