@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -93,11 +94,11 @@ namespace Chunky.Shared
         /// </summary>
         /// <param name="targetPathDir">Optional save path dir. NOTE: has to point to a dir, since this will generate multiple bitmaps.</param>
         /// <returns>The reconstruction (element 0) as well as comparison/debugging bitmaps.</returns>
-        public Bitmap[] ReconstructAndCompare(Bitmap original, string targetPathDir = null)
+        public Bitmap[] ReconstructAndCompare(Bitmap original, string targetPathDir = null, bool compatibilityMode = false)
         {
             List<Bitmap> result = new List<Bitmap>();
             
-            Bitmap reconstruction = Reconstruct(targetPathDir);
+            Bitmap reconstruction = Reconstruct(targetPathDir, compatibilityMode);
             result.Add(reconstruction);
 
             Bitmap varianceColored = CompareVariance(original, targetPathDir);
@@ -112,36 +113,37 @@ namespace Chunky.Shared
         /// </summary>
         /// <param name="targetPath">Optional save path dir. NOTE: has to point to a dir, since this will generate multiple bitmaps.</param>
         /// <returns>The reconstruction</returns>
-        public Bitmap Reconstruct(string targetPathDir = null)
+        public Bitmap Reconstruct(string targetPathDir = null, bool compatibilityMode = false)
         {
             Bitmap result = new Bitmap(_originalWidth, _originalHeight);
-            
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             Rectangle resultRect = Rectangle.Empty;
             Rectangle chunkRect = Rectangle.Empty;
-            IntPtr resultPtr = IntPtr.Zero;
-            IntPtr chunkPtr = IntPtr.Zero;
             
-            short diffX, diffY, chunkWidth = 0, chunkHeight = 0;
-            int index = 0, count = 0, bytes = 0;
+            short chunkWidth = 0, chunkHeight = 0;
             byte[] rgbValues = new byte[0];
             byte[] chunkRgbValues = new byte[0];
-
-            // TODO: Verily I say unto you, thou musteth many-a-thread this below dong-a-long per a chonk
 
             for (int x = 0; x < _data.GetLength(0); x++)
             {
                 for (int y = 0; y < _data.GetLength(1); y++)
                 {
-                    Bitmap chunkBitmap = _data[x, y].Bitmap;
+                    int x1 = x;
+                    int y1 = y;
+
+                    Bitmap chunkBitmap = _data[x1, y1].Bitmap;
+                    short diffX, diffY;
 
                     if (chunkBitmap == null) throw new Exception("Attempting to reconstruct from an out-of-bounds map (no chunk exists but map has index)");                    
                     
                     if (chunkWidth == 0) chunkWidth = (short)chunkBitmap.Width;
                     if (chunkHeight == 0) chunkHeight = (short)chunkBitmap.Height;
 
-                    if (x == _data.GetLength(0) - 1) diffX = (short) ((short) ((x * chunkWidth) + chunkWidth) - _originalWidth);
+                    if (x1 == _data.GetLength(0) - 1) diffX = (short) ((short) ((x1 * chunkWidth) + chunkWidth) - _originalWidth);
                     else diffX = 0;
-                    if (y == _data.GetLength(1) - 1) diffY = (short) ((short) ((y * chunkHeight) + chunkHeight) - _originalHeight);
+                    if (y1 == _data.GetLength(1) - 1) diffY = (short) ((short) ((y1 * chunkHeight) + chunkHeight) - _originalHeight);
                     else diffY = 0;
 
                     if (chunkBitmap.Width - diffX <= 0 || chunkBitmap.Height - diffY <= 0) throw new Exception("Found an empty chunk! Probably want to see what causes this.");
@@ -151,11 +153,11 @@ namespace Chunky.Shared
                     chunkRect.Width = chunkWidth; 
                     chunkRect.Height = chunkHeight;
                     
-                    resultRect.X = x * chunkWidth;
-                    resultRect.Y = y * chunkHeight;
-                    resultRect.Width = Math.Min((chunkBitmap.Width - Math.Max((int) diffX, 0)), _originalWidth - x * chunkBitmap.Width);
-                    resultRect.Height = Math.Min((chunkBitmap.Height - Math.Max((int) diffY, 0)), _originalHeight - y * chunkBitmap.Height);
-                    
+                    resultRect.X = x1 * chunkWidth;
+                    resultRect.Y = y1 * chunkHeight;
+                    resultRect.Width = Math.Min((chunkBitmap.Width - Math.Max((int) diffX, 0)), _originalWidth - x1 * chunkBitmap.Width);
+                    resultRect.Height = Math.Min((chunkBitmap.Height - Math.Max((int) diffY, 0)), _originalHeight - y1 * chunkBitmap.Height);
+
                     BitmapData bitmapData = result.LockBits(
                         resultRect, 
                         ImageLockMode.ReadWrite,
@@ -164,10 +166,10 @@ namespace Chunky.Shared
                         chunkRect, 
                         ImageLockMode.ReadOnly,
                         PixelFormat.Format32bppPArgb);
-                    
-                    resultPtr = bitmapData.Scan0;
-                    chunkPtr = chunkBitmapData.Scan0;
-                    bytes = bitmapData.Stride * bitmapData.Height;
+                
+                    IntPtr resultPtr = bitmapData.Scan0;
+                    IntPtr chunkPtr = chunkBitmapData.Scan0;
+                    int bytes = bitmapData.Stride * bitmapData.Height;
                     if (rgbValues.Length != bytes) rgbValues = new byte[bytes];
                     if (chunkRgbValues.Length != bytes) chunkRgbValues = new byte[bytes];
 
@@ -178,26 +180,11 @@ namespace Chunky.Shared
                     {
                         rgbValues[i] = chunkRgbValues[i];
                     }
-                    /*
-                    for (int cy = 0; cy < chunkHeight; cy++)
-                    {
-                        for (int cx = 0; cx < chunkWidth; cx++)
-                        {
-                            for (int i = 0; i < 4; i++)
-                            {
-                                if (index > bytes - 1) break;
-                                rgbValues[index] = chunkRgbValues[index];
-                                index++;
-                            }
-                        }
-                    }
-*/
+                
                     System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, resultPtr, bytes);
-                    
+                
                     chunkBitmap.UnlockBits(chunkBitmapData);
                     result.UnlockBits(bitmapData);
-                    index = 0;
-                    count++;
                 }
             }
 
@@ -205,63 +192,59 @@ namespace Chunky.Shared
                 result.Save(Path.Combine(targetPathDir, _name + "-reconstruction" + Utils.FormatExtension(ImageFormat.Png)));
             _reconstruction = result;
 
-            //rgbValues = null;
-            //chunkRgbValues = null;
-            //GC.Collect();
+            Console.WriteLine(sw.ElapsedMilliseconds);
+            sw.Stop();
             return result;
         }
-
+        
         public Bitmap CompareVariance(Bitmap original, string targetPathDir = null)
         {
             Bitmap result = new Bitmap(original.Width, original.Height);
-            Bitmap reconstructino = _reconstruction;
+            Bitmap reconstruction = _reconstruction;
 
+            /*
             Console.WriteLine("ORIGINAL: " + original.Width + ", " + original.Height);
             Console.WriteLine("RECONSTR: " + reconstructino.Width + ", " + reconstructino.Height);
+            */
             
             Rectangle rect = new Rectangle(0, 0, original.Width, original.Height);
             
             BitmapData originalData = original.LockBits(
                 rect, 
                 ImageLockMode.ReadOnly,
-                PixelFormat.Format32bppRgb);
-            BitmapData reconstructionData = reconstructino.LockBits(
+                PixelFormat.Format32bppPArgb);
+            BitmapData reconstructionData = reconstruction.LockBits(
                 rect, 
                 ImageLockMode.ReadOnly,
-                PixelFormat.Format32bppRgb);
+                PixelFormat.Format32bppPArgb);
             BitmapData resultData = result.LockBits(
                 rect, 
                 ImageLockMode.ReadWrite,
-                PixelFormat.Format32bppRgb);
+                PixelFormat.Format32bppPArgb);
                     
-            IntPtr originalPointer = originalData.Scan0;
-            IntPtr reconstructionPointer = reconstructionData.Scan0;
-            IntPtr resultPointer = resultData.Scan0;
+            IntPtr originalPtr = originalData.Scan0;
+            IntPtr reconstructionPtr = reconstructionData.Scan0;
+            IntPtr resultPtr = resultData.Scan0;
             
             int bytes = originalData.Stride * originalData.Height;
             byte[] originalRgbValues = new byte[bytes];
             byte[] reconstructionRgbValues = new byte[bytes];
             byte[] resultRgbValues = new byte[bytes];
                 
-            System.Runtime.InteropServices.Marshal.Copy(originalPointer, originalRgbValues, 0, bytes);
-            System.Runtime.InteropServices.Marshal.Copy(reconstructionPointer, reconstructionRgbValues, 0, bytes);
-            System.Runtime.InteropServices.Marshal.Copy(resultPointer, resultRgbValues, 0, bytes);
+            System.Runtime.InteropServices.Marshal.Copy(originalPtr, originalRgbValues, 0, bytes);
+            System.Runtime.InteropServices.Marshal.Copy(reconstructionPtr, reconstructionRgbValues, 0, bytes);
+            System.Runtime.InteropServices.Marshal.Copy(resultPtr, resultRgbValues, 0, bytes);
 
-            byte currR = 0;
-            byte diffR = 0;
-            byte diffG = 0;
-            byte diffB = 0;
-            byte diffA = 0;
-            byte byteIdx = 0;
+            byte diffR = 0, diffG = 0, diffB = 0, diffA = 0, byteIdx = 0/*, currR = 0*/;
             
             for (int i = 0; i < bytes; i++)
             {
                 switch (byteIdx)
                 {
-                    // jesus these colors arent in ARGB or RGBA order, they are apparently BGRA.......................
+                    // note to self: ordered BGRA
                     case 2:
                         diffR = (byte) Math.Abs(originalRgbValues[i] - reconstructionRgbValues[i]);
-                        currR = reconstructionRgbValues[i];
+                        //currR = reconstructionRgbValues[i];
                         break;
                     case 1:
                         diffG = (byte) Math.Abs(originalRgbValues[i] - reconstructionRgbValues[i]);
@@ -281,7 +264,6 @@ namespace Chunky.Shared
                             resultRgbValues[i - 2] = 0;
                             resultRgbValues[i - 1] = 255;
                             resultRgbValues[i] = originalRgbValues[i];
-                        } 
 
                         /*
                             if (currR > _lighterThreshold)
@@ -311,7 +293,10 @@ namespace Chunky.Shared
                             resultRgbValues[i-2] = originalRgbValues[i-2];
                             resultRgbValues[i-1] = originalRgbValues[i-1];
                             resultRgbValues[i] = originalRgbValues[i];
-                        }*/
+                        */
+                        }
+                        
+                        
                         byteIdx = 0;
                         continue;
                     }
@@ -319,11 +304,12 @@ namespace Chunky.Shared
                 byteIdx++;
             }
             
-            System.Runtime.InteropServices.Marshal.Copy(resultRgbValues, 0, resultPointer, bytes);
+            System.Runtime.InteropServices.Marshal.Copy(resultRgbValues, 0, resultPtr, bytes);
             original.UnlockBits(originalData);
-            reconstructino.UnlockBits(reconstructionData);
+            reconstruction.UnlockBits(reconstructionData);
             result.UnlockBits(resultData);
             
+            /*
             Console.WriteLine(reconstructino.GetPixel(500, 1200));
             Console.WriteLine(original.GetPixel(500, 1200));
             Console.WriteLine(result.GetPixel(500, 1200));
@@ -333,6 +319,7 @@ namespace Chunky.Shared
             Console.WriteLine(reconstructino.GetPixel(1200, 500));
             Console.WriteLine(original.GetPixel(1200, 500));
             Console.WriteLine(result.GetPixel(1200, 500));
+            */
             
             if (targetPathDir != null) 
                 result.Save(Path.Combine(targetPathDir, _name + "-reconstruction-variance" + Utils.FormatExtension(ImageFormat.Png)));

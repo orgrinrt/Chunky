@@ -60,22 +60,22 @@ namespace Chunky.Shared
             // we always use the width & height when available (i.e not default (=0))
             if (Config.ChunkWidth != default && Config.ChunkHeight != default)
             {
-                Console.WriteLine("CHONKER USES WIDTH & HEIGHT");
+                //Console.WriteLine("CHONKER USES WIDTH & HEIGHT");
                 chonker = new Chonker(loader.Map, Config.ChunkWidth, Config.ChunkHeight);
             }
             else if (Config.ChunkWidth != default)
             {
-                Console.WriteLine("CHONKER USES WIDTH & CHUNK COUNT Y");
+                //Console.WriteLine("CHONKER USES WIDTH & CHUNK COUNT Y");
                 chonker = new Chonker(loader.Map, Config.ChunkWidth, Config.ChunkCountY);
             }
             else if (Config.ChunkHeight != default)
             {
-                Console.WriteLine("CHONKER USES CHUNK COUNT X & HEIGHT");
+                //Console.WriteLine("CHONKER USES CHUNK COUNT X & HEIGHT");
                 chonker = new Chonker(loader.Map, Config.ChunkCountX, Config.ChunkHeight);
             }
             else
             {
-                Console.WriteLine("CHONKER USES CHUNK COUNT X & CHUNK COUNT Y");
+                //Console.WriteLine("CHONKER USES CHUNK COUNT X & CHUNK COUNT Y");
                 chonker = new Chonker(loader.Map, Config.ChunkCountX, Config.ChunkCountY);
             }
             
@@ -128,7 +128,7 @@ namespace Chunky.Shared
             {
                 //Reconstructor reconstructor = new Reconstructor(Result, name, (short)OriginalBitmap.Width, (short)OriginalBitmap.Height);
                 Reconstructor reconstructor = new Reconstructor(path, name, (short)OriginalBitmap.Width, (short)OriginalBitmap.Height);
-                if (exportVarianceTest) reconstructor.ReconstructAndCompare(OriginalBitmap, path);
+                if (exportVarianceTest) reconstructor.ReconstructAndCompare(OriginalBitmap, path, Config.CompatibilityMode);
                 else reconstructor.Reconstruct(targetDir);
             }
         }
