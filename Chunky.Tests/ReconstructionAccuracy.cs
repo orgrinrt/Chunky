@@ -47,6 +47,9 @@ namespace Chunky.Tests
                     Assert.Equal(originalPixel, reconstructedPixel);
                 }
             }
+
+            Assert.Equal(original.Width, results[0].Width); // reconstruction
+            Assert.Equal(original.Width, results[1].Width); // varianceComparison
         }
 
         [Fact]
@@ -57,6 +60,30 @@ namespace Chunky.Tests
             _testOutputHelper.WriteLine(testMapPath);
             MapLoader loader = new MapLoader(testMapPath);
             Chonker chonker = new Chonker(loader.Map, 100, 200);
+            Reconstruct(chonker.GenerateChunks(), Path.Combine(assetsDir, "Result"), "colorscene", loader.OriginalBitmap);
+        }
+        
+        [Fact]
+        public void EnsurePixelAccuracyOfNormalImage99x138()
+        {
+            string assetsDir = Path.Combine(Utils.SolveAssemblyRootDir(Assembly.GetCallingAssembly()), "Assets");
+            string testMapPath = Path.Combine(assetsDir, "colorscene.png");
+            _testOutputHelper.WriteLine(testMapPath);
+            
+            MapLoader loader = new MapLoader(testMapPath);
+            Chonker chonker = new Chonker(loader.Map, 100, 200);
+            Reconstruct(chonker.GenerateChunks(), Path.Combine(assetsDir, "Result"), "colorscene", loader.OriginalBitmap);
+        }
+        
+        [Fact]
+        public void EnsurePixelAccuracyOfNormalImage444x18()
+        {
+            string assetsDir = Path.Combine(Utils.SolveAssemblyRootDir(Assembly.GetCallingAssembly()), "Assets");
+            string testMapPath = Path.Combine(assetsDir, "colorscene.png");
+            _testOutputHelper.WriteLine(testMapPath);
+            
+            MapLoader loader = new MapLoader(testMapPath);
+            Chonker chonker = new Chonker(loader.Map, 444, 18);
             Reconstruct(chonker.GenerateChunks(), Path.Combine(assetsDir, "Result"), "colorscene", loader.OriginalBitmap);
         }
     }
