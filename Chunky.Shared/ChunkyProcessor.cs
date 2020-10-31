@@ -108,20 +108,21 @@ namespace Chunky.Shared
                 for (int y = 0; y < Result.GetLength(1); y++)
                 {
                     ChunkData chunk = Result[x,y];
+                    string finalPath = Path.Combine(path, name + "-" + chunk.X + "-" + chunk.Y + ".png");
 
                     if (!Config.CompatibilityMode)
                     {
                         Thread thread = new Thread(() =>
-                            chunk.Bitmap.Save(Path.Combine(path, name + "-" + chunk.X + "-" + chunk.Y + ".png"),
-                                ImageFormat.Png)
+                            chunk.Bitmap.Save(finalPath, ImageFormat.Png)
                         );
                         thread.Start();
                     }
                     else
                     {
-                        chunk.Bitmap.Save(Path.Combine(path, name + "-" + chunk.X + "-" + chunk.Y + ".png"),
-                            ImageFormat.Png);
+                        chunk.Bitmap.Save(finalPath, ImageFormat.Png);
                     }
+
+                    Print.Line(ConsoleColor.Green, "Saved a file to: " + finalPath);
                 }
             }
 
