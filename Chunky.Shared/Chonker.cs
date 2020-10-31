@@ -55,13 +55,6 @@ namespace Chunky.Shared
         
         public ChunkData[,] GenerateChunks(bool compatibilityMode = false)
         {
-            /*
-            Console.WriteLine("CHUNKWIDTH: " + _chunkWidth);
-            Console.WriteLine("CHUNKHEIGHT: " + _chunkHeight);
-            Console.WriteLine("CHUNK COUNTX " + _chunkCountX);
-            Console.WriteLine("CHUNK COUNTY: " + _chunkCountY);
-            */
-            
             _processedChunks = new ChunkData[_chunkCountX, _chunkCountY];
             _totalChunkCount = _chunkCountX * _chunkCountY;
             int processedCount = 0;
@@ -102,7 +95,7 @@ namespace Chunky.Shared
             short originX = (short) Math.Round((double) (x * _chunkWidth));
             short originY = (short) Math.Round((double) (y * _chunkHeight));
 
-            Bitmap bitmap = new Bitmap(_chunkWidth, _chunkHeight, PixelFormat.Format32bppRgb);
+            Bitmap bitmap = new Bitmap(_chunkWidth, _chunkHeight, PixelFormat.Format32bppArgb);
             Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
             
             BitmapData data = bitmap.LockBits(
