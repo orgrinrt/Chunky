@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Threading;
@@ -55,12 +53,15 @@ namespace Chunky.Shared
             SolveChunkSize();
         }
         
-        public ChunkData[,] GenerateChunks()
-        {/*
+        public ChunkData[,] GenerateChunks(bool compatibilityMode = false)
+        {
+            /*
             Console.WriteLine("CHUNKWIDTH: " + _chunkWidth);
             Console.WriteLine("CHUNKHEIGHT: " + _chunkHeight);
             Console.WriteLine("CHUNK COUNTX " + _chunkCountX);
-            Console.WriteLine("CHUNK COUNTY: " + _chunkCountY);*/
+            Console.WriteLine("CHUNK COUNTY: " + _chunkCountY);
+            */
+            
             _processedChunks = new ChunkData[_chunkCountX, _chunkCountY];
             _totalChunkCount = _chunkCountX * _chunkCountY;
             int processedCount = 0;
@@ -70,22 +71,29 @@ namespace Chunky.Shared
             {
                 for (int y = 0; y < _chunkCountY; y++)
                 {
-                    // process each chunk in its own thread
-                    // we know it'll be fine because each operation only adds an element to a unique index in a pre-allocated array
-                    int x1 = x;
-                    int y1 = y;
-                    
-                    Thread thread = new Thread(() =>
+                    if (!compatibilityMode)
                     {
-                        _processedChunks[x1, y1] = GenerateChunk(x1, y1);
-                        lock (countLock) processedCount++;
-                    });
-                    thread.Start();
+                        // process each chunk in its own thread
+                        // we know it'll be fine because each operation only adds an element to a unique index in a pre-allocated array
+                        int x1 = x;
+                        int y1 = y;
+                    
+                        Thread thread = new Thread(() =>
+                        {
+                            _processedChunks[x1, y1] = GenerateChunk(x1, y1);
+                            lock (countLock) processedCount++;
+                        });
+                        thread.Start();
+                    }
+                    else
+                    {
+                        _processedChunks[x, y] = GenerateChunk(x, y);
+                        processedCount++;
+                    }
                 }
             }
             
             while (processedCount < _totalChunkCount) { }
-
             return _processedChunks;
         }
 

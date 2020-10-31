@@ -10,6 +10,7 @@ namespace Chunky.Shared
             string sourcePath, 
             string targetImageType, 
             PixelFormat targetPixelFormat, 
+            bool compatibilityMode,
             bool generateReconstruction, 
             bool generateVarianceComparison, 
             int chunkWidth, 
@@ -24,6 +25,7 @@ namespace Chunky.Shared
             SourcePath = sourcePath;
             TargetImageType = targetImageType;
             TargetPixelFormat = targetPixelFormat;
+            CompatibilityMode = compatibilityMode;
             GenerateReconstruction = generateReconstruction;
             GenerateVarianceComparison = generateVarianceComparison;
             ChunkWidth = chunkWidth;
@@ -36,6 +38,7 @@ namespace Chunky.Shared
 
         public ChunkyConfig32bit(
             string sourcePath, 
+            bool compatibilityMode = false,
             bool generateReconstruction = true, 
             bool generateVarianceComparison = true) 
             : this(
@@ -44,6 +47,7 @@ namespace Chunky.Shared
                 sourcePath,
                 null,
                 default,
+                compatibilityMode,
                 generateReconstruction,
                 generateVarianceComparison,
                 default,
@@ -57,6 +61,7 @@ namespace Chunky.Shared
             string sourcePath, 
             int chunkWidth,
             int chunkHeight,
+            bool compatibilityMode = false,
             bool generateReconstruction = true, 
             bool generateVarianceComparison = true) 
             : this(
@@ -65,6 +70,7 @@ namespace Chunky.Shared
                 sourcePath,
                 null,
                 default,
+                compatibilityMode,
                 generateReconstruction,
                 generateVarianceComparison,
                 chunkWidth,
@@ -78,6 +84,7 @@ namespace Chunky.Shared
             string sourcePath, 
             short chunkCountX,
             short chunkCountY,
+            bool compatibilityMode = false,
             bool generateReconstruction = true, 
             bool generateVarianceComparison = true) 
             : this(
@@ -86,6 +93,7 @@ namespace Chunky.Shared
                 sourcePath,
                 null,
                 default,
+                compatibilityMode,
                 generateReconstruction,
                 generateVarianceComparison,
                 default,
@@ -120,6 +128,10 @@ namespace Chunky.Shared
         /// </summary>
         public PixelFormat TargetPixelFormat { get; private set; }
         
+        /// <summary>
+        /// Whether to run the program in compatibility mode (i.e no threading)
+        /// </summary>
+        public bool CompatibilityMode { get; set; }
         /// <summary>
         /// Whether to generate a reconstruction.
         /// </summary>

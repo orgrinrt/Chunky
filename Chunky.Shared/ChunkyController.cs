@@ -41,6 +41,7 @@ namespace Chunky.Shared
                 config.SourcePath,
                 config.TargetImageType ?? Utils.SolveImageExtensionFromFileName(config.SourcePath),
                 config.TargetPixelFormat != default ? config.TargetPixelFormat : _originalPixelFormat,
+                config.CompatibilityMode,
                 config.GenerateReconstruction,
                 config.GenerateVarianceComparison,
                 config.ChunkWidth,
@@ -78,7 +79,7 @@ namespace Chunky.Shared
                 chonker = new Chonker(loader.Map, Config.ChunkCountX, Config.ChunkCountY);
             }
             
-            _result = chonker.GenerateChunks();
+            _result = chonker.GenerateChunks(Config.CompatibilityMode);
             if (saveToDisk) SaveResultToDisk(Config.GenerateReconstruction, Config.GenerateVarianceComparison);
             return Result;
         }
@@ -98,11 +99,20 @@ namespace Chunky.Shared
                 {
                     ChunkData chunk = Result[x,y];
 
-                    Thread thread = new Thread(() =>
+                    if (!Config.CompatibilityMode)
+                    {
+                        Thread thread = new Thread(() =>
+                            chunk.Bitmap.Save(Path.Combine(path, name + "-" + chunk.X + "-" + chunk.Y + ".png"),
+                                ImageFormat.Png)
+                        );
+                        thread.Start();
+                    }
+                    else
+                    {
                         chunk.Bitmap.Save(Path.Combine(path, name + "-" + chunk.X + "-" + chunk.Y + ".png"),
-                            ImageFormat.Png)
-                    );
-                    thread.Start();
+                            ImageFormat.Png);
+                    }
+                    
                 }
             }
 

@@ -21,6 +21,7 @@ namespace Chunky
                 256,
                 256,
                 false,
+                false,
                 false));
             controller.Chunkify();
         }
