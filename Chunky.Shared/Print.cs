@@ -19,6 +19,20 @@ namespace Chunky.Shared
             Console.WriteLine(e);
             Console.ForegroundColor = original;
         }
+
+        public static void Inline(ConsoleColor color, string msg)
+        {
+            ConsoleColor original = Console.ForegroundColor;
+            Console.ForegroundColor = color;
+            Console.Write(msg);
+            Console.ForegroundColor = original;
+        }
+        
+        public static void Inline(string msg)
+        {
+            ConsoleColor original = Console.ForegroundColor;
+            Inline(original, msg);
+        }
         
         public static void Line(string msg = "")
         {
