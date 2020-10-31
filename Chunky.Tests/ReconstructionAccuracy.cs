@@ -34,25 +34,18 @@ namespace Chunky.Tests
             Directory.CreateDirectory(targetDir);
             Reconstructor reconstructor = new Reconstructor(result, name, (short)original.Width, (short)original.Height);
             Bitmap[] results;
-            
-            if (original != null)
-            {
-                results = reconstructor.ReconstructAndCompare(original, targetDir);
-                
-                for (int x = 0; x < original.Width; x++)
-                {
-                    for (int y = 0; y < original.Height; y++)
-                    {
-                        Color originalPixel = original.GetPixel(x, y);
-                        Color reconstructedPixel = results[0].GetPixel(x, y);
 
-                        Assert.Equal(originalPixel, reconstructedPixel);
-                    }
-                }
-            }
-            else
+            results = reconstructor.ReconstructAndCompare(original, targetDir);
+                
+            for (int x = 0; x < original.Width; x++)
             {
-                results = new[] { reconstructor.Reconstruct(targetDir) };
+                for (int y = 0; y < original.Height; y++)
+                {
+                    Color originalPixel = original.GetPixel(x, y);
+                    Color reconstructedPixel = results[0].GetPixel(x, y);
+
+                    Assert.Equal(originalPixel, reconstructedPixel);
+                }
             }
         }
 
