@@ -39,6 +39,18 @@ namespace Chunky
             _descriptions.Add(id, desc);
         }
 
+        public void Execute(string command, string param)
+        {
+            if (_commands.ContainsKey(command))
+            {
+                _actions[_commands[command]](param);
+            }
+            else
+            {
+                Print.Line(ConsoleColor.Red, "Couldn't run command " + command + " with param " + param);
+            }
+        }
+
         public void PrintHelp(string dummy = "")
         {
             Print.Hr();
