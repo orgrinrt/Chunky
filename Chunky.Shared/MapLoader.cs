@@ -31,7 +31,7 @@ namespace Chunky.Shared
             BitmapData data = _originalBitmap.LockBits(
                 new Rectangle(0, 0, _originalBitmap.Width, _originalBitmap.Height), 
                 ImageLockMode.ReadOnly,
-                PixelFormat.Format32bppRgb);
+                PixelFormat.Format32bppArgb);
                     
             IntPtr ptr = data.Scan0;
             int bytes = data.Stride * data.Height;
