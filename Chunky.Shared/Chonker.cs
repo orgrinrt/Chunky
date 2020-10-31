@@ -164,7 +164,6 @@ namespace Chunky.Shared
             {
                 if (width % _chunkWidth == 0)
                 {
-                    Console.WriteLine("NO REMAINDER FOR X");
                     _chunkCountX = (short)(width / _chunkWidth);
                 }
                 else
@@ -177,7 +176,6 @@ namespace Chunky.Shared
             {
                 if (height % _chunkHeight == 0)
                 {
-                    Console.WriteLine("NO REMAINDER FOR Y");
                     if (_chunkHeight != default) _chunkCountY = (short)(height / _chunkHeight);
                 }
                 else
