@@ -21,26 +21,34 @@ namespace Chunky.Shared
 
             if (!Directory.Exists(config.SourcePath)) throw new Exception("Attempted to batch operate on a path but it didn't exist");
 
+            Print.Line(ConsoleColor.Cyan, "Starting to process images from: " + config.SourcePath);
+            
             string[] files = Directory.GetFiles(config.SourcePath);
 
             foreach (string filePath in files)
             {
-                _processors.Enqueue(new ChunkyProcessor(new ChunkyConfig32bit(
-                    config.Name,
-                    config.TargetDir,
-                    filePath,
-                    config.TargetImageType,
-                    config.TargetPixelFormat,
-                    config.RemainderHandlingMode,
-                    config.CompatibilityMode,
-                    config.GenerateReconstruction,
-                    config.GenerateVarianceComparison,
-                    config.ChunkWidth,
-                    config.ChunkHeight,
-                    config.ChunkCountX,
-                    config.ChunkCountY,
-                    config.MinDepth,
-                    config.MaxDepth)));
+                if (filePath.EndsWith(".png") ||
+                    filePath.EndsWith(".jpg") ||
+                    filePath.EndsWith(".jpeg") ||
+                    filePath.EndsWith(".bmp"))
+                {
+                    _processors.Enqueue(new ChunkyProcessor(new ChunkyConfig32bit(
+                        config.Name,
+                        config.TargetDir,
+                        filePath,
+                        config.TargetImageType,
+                        config.TargetPixelFormat,
+                        config.RemainderHandlingMode,
+                        config.CompatibilityMode,
+                        config.GenerateReconstruction,
+                        config.GenerateVarianceComparison,
+                        config.ChunkWidth,
+                        config.ChunkHeight,
+                        config.ChunkCountX,
+                        config.ChunkCountY,
+                        config.MinDepth,
+                        config.MaxDepth)));
+                }
             }
         }
 
