@@ -18,6 +18,8 @@ namespace Chunky
         {
             InitCliEnv();
             ParseArgs(args);
+            Console.WriteLine(Utils.ParsePath("."));
+            Console.WriteLine(Utils.ParsePath("../test/hello"));
             Console.ReadLine();
             /*
             string fileName = "colorscene.png";
@@ -71,15 +73,15 @@ namespace Chunky
                 "addSource", 
                 "Specifies the source image for the operation. " +
                 "Can be either a file for single operation or a directory for a batch operation.", 
-                param => { _sourcePath = param; });
+                param => { _sourcePath = Utils.ParsePath(param); });
             _cli.AddCommand("-s", "addSource");
             _cli.AddCommand("--source", "addSource");
 
             _cli.AddAction(
                 "config",
-                "Specifies the config to use for the operation(s)." +
+                "Specifies the config to use for the operation(s). " +
                 "Can be a full path or a relative path",
-                param => { _currConfig = State.LoadConfig(param); });
+                param => { _currConfig = State.LoadConfig(Utils.ParsePath(param)); });
             _cli.AddCommand("-c", "config");
             _cli.AddCommand("--config", "config");
         }
