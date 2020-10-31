@@ -1,4 +1,5 @@
 using System;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json;
@@ -36,6 +37,27 @@ namespace Chunky.Shared
             }
 
             return result;
+        }
+
+        public static ChunkyConfig32bit LoadDefaultConfig()
+        {
+            return new ChunkyConfig32bit(
+                null,
+                "ChunkyResults",
+                null,
+                null,
+                PixelFormat.Format32bppArgb,
+                RemainderHandlingMode.FillAlpha,
+                false,
+                true,
+                true,
+                256,
+                256,
+                default,
+                default,
+                byte.MinValue,
+                byte.MaxValue
+            );
         }
 
         public static void SaveConfig(string pathToConfig, bool treatAsName = false)
