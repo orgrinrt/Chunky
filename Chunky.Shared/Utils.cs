@@ -100,7 +100,6 @@ namespace Chunky.Shared
                 result = path;
             }
 
-            Console.WriteLine(result);
             bool initialRun = true;
             if (result.Contains(".."))
             {
@@ -122,7 +121,6 @@ namespace Chunky.Shared
                     {
                         result = Path.Combine(result, innerSplit[i]);
                     }
-                    Console.WriteLine(result);
                     initialRun = false;
                 }
             }
