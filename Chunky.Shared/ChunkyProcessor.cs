@@ -25,8 +25,8 @@ namespace Chunky.Shared
         
         public ChunkyProcessor(ChunkyConfig32bit config)
         {
-            string name = "";
-            string targetDir = "";
+            string name = config.Name;
+            string targetDir = config.TargetDir;
             
             if (string.IsNullOrEmpty(config.SourcePath)) throw new Exception("Attempted to pass a faulty config (source path missing)");
             if (string.IsNullOrEmpty(config.Name)) name = Utils.SolveNameFromFileName(config.SourcePath);
@@ -89,6 +89,7 @@ namespace Chunky.Shared
         {
             name ??= Config.Name;
             targetDir ??= Config.TargetDir;
+            if (State.Config.Verbose) Print.Line(ConsoleColor.Magenta, "Starting to batch save to: " + targetDir);
 
             string path = Path.Combine(targetDir, name);
 
@@ -122,7 +123,7 @@ namespace Chunky.Shared
                         chunk.Bitmap.Save(finalPath, ImageFormat.Png);
                     }
 
-                    Print.Line(ConsoleColor.Green, "Saved a file to: " + finalPath);
+                    if (State.Config.Verbose) Print.Line(ConsoleColor.Green, "Saved a file to: " + finalPath);
                 }
             }
 
