@@ -86,5 +86,53 @@ namespace Chunky.Tests
             Chonker chonker = new Chonker(loader.Map, 444, 18);
             Reconstruct(chonker.GenerateChunks(), Path.Combine(assetsDir, "Result"), "colorscene", loader.OriginalBitmap);
         }
+        
+        [Fact]
+        public void EnsurePixelAccuracyOfNormalImageXCount10x10()
+        {
+            string assetsDir = Path.Combine(Utils.SolveAssemblyRootDir(Assembly.GetCallingAssembly()), "Assets");
+            string testMapPath = Path.Combine(assetsDir, "colorscene.png");
+            _testOutputHelper.WriteLine(testMapPath);
+            
+            MapLoader loader = new MapLoader(testMapPath);
+            Chonker chonker = new Chonker(loader.Map, (short)10, (short)10);
+            Reconstruct(chonker.GenerateChunks(), Path.Combine(assetsDir, "Result"), "colorscene", loader.OriginalBitmap);
+        }
+        
+        [Fact]
+        public void EnsurePixelAccuracyOfNormalImageXCount12x12()
+        {
+            string assetsDir = Path.Combine(Utils.SolveAssemblyRootDir(Assembly.GetCallingAssembly()), "Assets");
+            string testMapPath = Path.Combine(assetsDir, "colorscene.png");
+            _testOutputHelper.WriteLine(testMapPath);
+            
+            MapLoader loader = new MapLoader(testMapPath);
+            Chonker chonker = new Chonker(loader.Map, (short)12, (short)12);
+            Reconstruct(chonker.GenerateChunks(), Path.Combine(assetsDir, "Result"), "colorscene", loader.OriginalBitmap);
+        }
+        
+        [Fact]
+        public void EnsurePixelAccuracyOfNormalImageXCount22x8()
+        {
+            string assetsDir = Path.Combine(Utils.SolveAssemblyRootDir(Assembly.GetCallingAssembly()), "Assets");
+            string testMapPath = Path.Combine(assetsDir, "colorscene.png");
+            _testOutputHelper.WriteLine(testMapPath);
+            
+            MapLoader loader = new MapLoader(testMapPath);
+            Chonker chonker = new Chonker(loader.Map, (short)22, (short)8);
+            Reconstruct(chonker.GenerateChunks(), Path.Combine(assetsDir, "Result"), "colorscene", loader.OriginalBitmap);
+        }
+        
+        [Fact]
+        public void EnsurePixelAccuracyOfNormalImageXCount3x14()
+        {
+            string assetsDir = Path.Combine(Utils.SolveAssemblyRootDir(Assembly.GetCallingAssembly()), "Assets");
+            string testMapPath = Path.Combine(assetsDir, "colorscene.png");
+            _testOutputHelper.WriteLine(testMapPath);
+            
+            MapLoader loader = new MapLoader(testMapPath);
+            Chonker chonker = new Chonker(loader.Map, (short)3, (short)14);
+            Reconstruct(chonker.GenerateChunks(), Path.Combine(assetsDir, "Result"), "colorscene", loader.OriginalBitmap);
+        }
     }
 }
