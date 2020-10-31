@@ -31,6 +31,7 @@ namespace Chunky.Shared
                     filePath,
                     config.TargetImageType,
                     config.TargetPixelFormat,
+                    config.RemainderHandlingMode,
                     config.CompatibilityMode,
                     config.GenerateReconstruction,
                     config.GenerateVarianceComparison,

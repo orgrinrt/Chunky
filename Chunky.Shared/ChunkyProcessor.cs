@@ -41,6 +41,7 @@ namespace Chunky.Shared
                 config.SourcePath,
                 config.TargetImageType ?? Utils.SolveImageExtensionFromFileName(config.SourcePath),
                 config.TargetPixelFormat != default ? config.TargetPixelFormat : _originalPixelFormat,
+                config.RemainderHandlingMode,
                 config.CompatibilityMode,
                 config.GenerateReconstruction,
                 config.GenerateVarianceComparison,

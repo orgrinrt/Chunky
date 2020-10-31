@@ -10,6 +10,7 @@ namespace Chunky.Shared
             string sourcePath, 
             string targetImageType, 
             PixelFormat targetPixelFormat, 
+            RemainderHandlingMode remainderHandlingMode,
             bool compatibilityMode,
             bool generateReconstruction, 
             bool generateVarianceComparison, 
@@ -25,6 +26,7 @@ namespace Chunky.Shared
             SourcePath = sourcePath;
             TargetImageType = targetImageType;
             TargetPixelFormat = targetPixelFormat;
+            RemainderHandlingMode = remainderHandlingMode;
             CompatibilityMode = compatibilityMode;
             GenerateReconstruction = generateReconstruction;
             GenerateVarianceComparison = generateVarianceComparison;
@@ -47,6 +49,7 @@ namespace Chunky.Shared
                 sourcePath,
                 null,
                 default,
+                RemainderHandlingMode.FillAlpha,
                 compatibilityMode,
                 generateReconstruction,
                 generateVarianceComparison,
@@ -70,6 +73,7 @@ namespace Chunky.Shared
                 sourcePath,
                 null,
                 default,
+                RemainderHandlingMode.FillAlpha,
                 compatibilityMode,
                 generateReconstruction,
                 generateVarianceComparison,
@@ -93,6 +97,7 @@ namespace Chunky.Shared
                 sourcePath,
                 null,
                 default,
+                RemainderHandlingMode.FillAlpha,
                 compatibilityMode,
                 generateReconstruction,
                 generateVarianceComparison,
@@ -127,6 +132,10 @@ namespace Chunky.Shared
         /// If not set, uses the same format as source.
         /// </summary>
         public PixelFormat TargetPixelFormat { get; private set; }
+        /// <summary>
+        /// Determines how the processors handle remainders caused by uneven splits.
+        /// </summary>
+        public RemainderHandlingMode RemainderHandlingMode { get; private set; }
         
         /// <summary>
         /// Whether to run the program in compatibility mode (i.e no threading)
@@ -170,5 +179,13 @@ namespace Chunky.Shared
         /// Describes the maximum value of any given pixel channel
         /// </summary>
         public byte MaxDepth { get; private set; }
+    }
+
+    public enum RemainderHandlingMode
+    {
+        None,
+        FillColor,
+        FillAlpha,
+        Crop
     }
 }
