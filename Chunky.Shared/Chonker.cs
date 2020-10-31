@@ -157,8 +157,8 @@ namespace Chunky.Shared
         private void SolveChunkSize()
         {
             Console.WriteLine("SOLVE CHUNK SIZE");
-            if (_chunkCountX != default) _chunkWidth = _map.GetLength(0) / _chunkCountX;
-            if (_chunkCountY != default) _chunkHeight = _map.GetLength(1) / _chunkCountY;
+            if (_chunkCountX != default) _chunkWidth = (int) Math.Ceiling(_map.GetLength(0) / (double)_chunkCountX);
+            if (_chunkCountY != default) _chunkHeight = (int) Math.Ceiling(_map.GetLength(1) / (double)_chunkCountY);
         }
 
         private void SolveChunkDimensionalCount()

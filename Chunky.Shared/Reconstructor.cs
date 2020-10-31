@@ -114,8 +114,8 @@ namespace Chunky.Shared
                     
                     
                     rect = new Rectangle(x * chunkWidth, y * chunkHeight, 
-                        chunkBitmap.Width - diffX, 
-                        chunkBitmap.Height - diffY);
+                        chunkBitmap.Width - Math.Max((int) diffX, 0), 
+                        chunkBitmap.Height - Math.Max((int) diffY, 0));
 
                     Console.WriteLine("-------");
                     Console.WriteLine("X: " + x  + " / " + _data.GetLength(0) + ", Y: " + y + " / " + _data.GetLength(1));
@@ -246,13 +246,13 @@ namespace Chunky.Shared
 
                         if (avgDiff > 0)
                         {
-                            /*
-                        resultRgbValues[i - 3] = 255;
-                        resultRgbValues[i - 2] = 0;
-                        resultRgbValues[i - 1] = 0;
-                        resultRgbValues[i] = originalRgbValues[i];
-                        */
-                        
+                            resultRgbValues[i - 3] = 0;
+                            resultRgbValues[i - 2] = 0;
+                            resultRgbValues[i - 1] = 255;
+                            resultRgbValues[i] = originalRgbValues[i];
+                        } 
+
+                        /*
                             if (currR > _lighterThreshold)
                             {
                                 resultRgbValues[i - 3] = (byte)Math.Clamp(originalRgbValues[i - 3] - (avgDiff * _diffMultiplier), 0, 255);
@@ -280,7 +280,7 @@ namespace Chunky.Shared
                             resultRgbValues[i-2] = originalRgbValues[i-2];
                             resultRgbValues[i-1] = originalRgbValues[i-1];
                             resultRgbValues[i] = originalRgbValues[i];
-                        }
+                        }*/
                         byteIdx = 0;
                         continue;
                     }
