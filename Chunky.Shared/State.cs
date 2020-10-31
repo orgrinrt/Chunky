@@ -5,13 +5,13 @@ using Newtonsoft.Json;
 
 namespace Chunky.Shared
 {
-    public class Chunky
+    public class State
     {
         public static GlobalConfig Config = new GlobalConfig(); // TODO: Serialize/deserialize from disk
         public static string GlobalConfigPath;
         public static string SavedConfigsPath;
 
-        static Chunky()
+        static State()
         {
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             

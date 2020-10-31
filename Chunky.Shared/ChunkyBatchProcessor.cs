@@ -54,7 +54,7 @@ namespace Chunky.Shared
 
             while (_processors.Count > 0)
             {
-                if (Chunky.Config.ParallelProcessCount < currProcessing) continue;
+                if (State.Config.ParallelProcessCount < currProcessing) continue;
                 
                 if (!Config.CompatibilityMode)
                 {
