@@ -1,15 +1,10 @@
 namespace Chunky.Shared
 {
-    public class GlobalConfig
+    public struct GlobalConfig
     {
-        public GlobalConfig(int parallelProcessCount)
+        public GlobalConfig(int parallelProcessCount = 10)
         {
             ParallelProcessCount = parallelProcessCount;
-        }
-
-        public GlobalConfig()
-        {
-            ParallelProcessCount = 10;
         }
 
         public int ParallelProcessCount { get; set; }
