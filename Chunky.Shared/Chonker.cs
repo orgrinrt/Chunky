@@ -149,14 +149,12 @@ namespace Chunky.Shared
 
         private void SolveChunkSize()
         {
-            Console.WriteLine("SOLVE CHUNK SIZE");
             if (_chunkCountX != default) _chunkWidth = (int) Math.Ceiling(_map.GetLength(0) / (double)_chunkCountX);
             if (_chunkCountY != default) _chunkHeight = (int) Math.Ceiling(_map.GetLength(1) / (double)_chunkCountY);
         }
 
         private void SolveChunkDimensionalCount()
         {
-            Console.WriteLine("SOLVE CHUNK DIMENSIONAL COUNT");
             short width = (short)_map.GetLength(0);
             short height = (short) _map.GetLength(1);
 
