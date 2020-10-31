@@ -16,6 +16,39 @@ namespace Chunky.Tests
         {
             _testOutputHelper = testOutputHelper;
         }
+
+        [Fact]
+        public void ExperimentalChonkingIsFaster()
+        {
+            ColorRgba32bit[,] map = new ColorRgba32bit[10000,10000];
+            for (int x = 0; x < map.GetLength(0); x++)
+            {
+                for (int y = 0; y < map.GetLength(1); y++)
+                {
+                    map[x, y] = new ColorRgba32bit(255, 255, 255, 255);
+                }
+            }
+            
+            Chonker chonker = new Chonker(map, 100, 100);
+            long nonThreadedDuration, threadedDuration;
+            
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            chonker.GenerateChunks(true);
+            nonThreadedDuration = sw.ElapsedMilliseconds;
+            sw.Stop();
+            sw.Reset();
+            
+            sw.Start();
+            chonker.GenerateChunks(false);
+            threadedDuration = sw.ElapsedMilliseconds;
+            sw.Stop();
+            sw.Reset();
+
+            _testOutputHelper.WriteLine("Non threaded duration: " + nonThreadedDuration);
+            _testOutputHelper.WriteLine("Threaded duration: " + threadedDuration);
+            Assert.True(nonThreadedDuration > threadedDuration);
+        }
         
         [Fact]
         public void ExperimentalModeDoesntCrashAndIsFaster()
