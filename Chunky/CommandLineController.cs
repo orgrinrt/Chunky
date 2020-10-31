@@ -55,7 +55,7 @@ namespace Chunky
                     }
                 }
 
-                Print.Line("\t\t" + _descriptions[id]);
+                Print.Line("\t" + _descriptions[id]);
                 Print.Line();
             }
         }
