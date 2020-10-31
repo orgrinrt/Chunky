@@ -16,11 +16,12 @@ namespace Chunky
             string testMapPath = Path.Combine(assetsDir, fileName);
             Console.WriteLine(testMapPath);
             
-            ChunkyController controller = new ChunkyController(new ChunkyConfig(testMapPath)
-            {
-                ChunkWidth = 256,
-                ChunkHeight = 256
-            });
+            ChunkyController controller = new ChunkyController(new ChunkyConfig32bit(
+                testMapPath,
+                256,
+                256,
+                false,
+                false));
             controller.Chunkify();
         }
 

@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading;
 
 namespace Chunky.Shared
 {
@@ -13,16 +14,16 @@ namespace Chunky.Shared
     {
         // immutable by design, to allow for safer multi-threading
         // for new images/batch operations, allocate new ones or replace with new instance
-        private readonly ChunkyConfig _config;
+        private readonly ChunkyConfig32bit _config;
         private readonly Bitmap _originalBitmap;
         private readonly PixelFormat _originalPixelFormat;
         private ChunkData[,] _result;
 
-        public ChunkyConfig Config => _config;
+        public ChunkyConfig32bit Config => _config;
         public Bitmap OriginalBitmap => _originalBitmap;
         public ChunkData[,] Result => _result;
         
-        public ChunkyController(ChunkyConfig config)
+        public ChunkyController(ChunkyConfig32bit config)
         {
             string name = "";
             string targetDir = "";
@@ -34,20 +35,21 @@ namespace Chunky.Shared
             _originalBitmap = new Bitmap(config.SourcePath);
             _originalPixelFormat = _originalBitmap.PixelFormat;
 
-            _config = new ChunkyConfig
-            {
-                SourcePath = config.SourcePath,
-                Name = name,
-                TargetDir = targetDir,
-                TargetImageType = config.TargetImageType ?? Utils.SolveImageExtensionFromFileName(config.SourcePath),
-                TargetPixelFormat = config.TargetPixelFormat != default ? config.TargetPixelFormat : _originalPixelFormat,
-                ChunkCountX = config.ChunkCountX,
-                ChunkCountY = config.ChunkCountY,
-                ChunkWidth = config.ChunkWidth,
-                ChunkHeight = config.ChunkHeight,
-                MinDepth = config.MinDepth,
-                MaxDepth = config.MaxDepth
-            };
+            _config = new ChunkyConfig32bit(
+                name,
+                targetDir,
+                config.SourcePath,
+                config.TargetImageType ?? Utils.SolveImageExtensionFromFileName(config.SourcePath),
+                config.TargetPixelFormat != default ? config.TargetPixelFormat : _originalPixelFormat,
+                config.GenerateReconstruction,
+                config.GenerateVarianceComparison,
+                config.ChunkWidth,
+                config.ChunkHeight,
+                config.ChunkCountX,
+                config.ChunkCountY,
+                config.MinDepth,
+                config.MaxDepth
+            );
         }
 
         public ChunkData[,] Chunkify(bool saveToDisk = true)
@@ -77,7 +79,7 @@ namespace Chunky.Shared
             }
             
             _result = chonker.GenerateChunks();
-            if (saveToDisk) SaveResultToDisk();
+            if (saveToDisk) SaveResultToDisk(Config.GenerateReconstruction, Config.GenerateVarianceComparison);
             return Result;
         }
 
@@ -85,7 +87,7 @@ namespace Chunky.Shared
         {
             name ??= Config.Name;
             targetDir ??= Config.TargetDir;
-            
+
             string path = Path.Combine(targetDir, name);
             
             Directory.CreateDirectory(path);
@@ -96,7 +98,11 @@ namespace Chunky.Shared
                 {
                     ChunkData chunk = Result[x,y];
 
-                    chunk.Bitmap.Save(Path.Combine(path, name + "-" + chunk.X + "-" + chunk.Y + ".png"), ImageFormat.Png);
+                    Thread thread = new Thread(() =>
+                        chunk.Bitmap.Save(Path.Combine(path, name + "-" + chunk.X + "-" + chunk.Y + ".png"),
+                            ImageFormat.Png)
+                    );
+                    thread.Start();
                 }
             }
 
