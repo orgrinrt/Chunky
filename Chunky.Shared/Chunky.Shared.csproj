@@ -11,6 +11,9 @@
 
     <ItemGroup>
       <None Remove="Assets\testmap.png" />
+      <Content Include="..\README.md">
+        <Link>README.md</Link>
+      </Content>
       <Content Include="Assets\testmap.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
