@@ -19,6 +19,34 @@ namespace Chunky.Shared
             SavedConfigsPath = Path.Combine(appDataPath, "Configs");
         }
 
+        public static ChunkyConfig32bit LoadConfig(string pathToConfig, bool treatAsName = false)
+        {
+            ChunkyConfig32bit result = new ChunkyConfig32bit();
+
+            if (treatAsName) pathToConfig = Path.Combine(SavedConfigsPath, pathToConfig);
+            
+            try
+            {
+                result = FileHelper.DeserializeFromJson<ChunkyConfig32bit>(pathToConfig);
+            }
+            catch (Exception e)
+            { 
+                Print.Line(e);
+                Print.Line(ConsoleColor.Yellow, "Returning a default config as a fallback.");
+            }
+
+            return result;
+        }
+
+        public static void SaveConfig(string pathToConfig, bool treatAsName = false)
+        {
+            if (string.IsNullOrEmpty(pathToConfig)) pathToConfig = GlobalConfigPath;
+
+            if (treatAsName) pathToConfig = Path.Combine(SavedConfigsPath, pathToConfig);
+            
+            FileHelper.SerializeAsJson(pathToConfig, Config);
+        }
+        
         public static void LoadGlobalConfig(string pathToConfig = null)
         {
             if (string.IsNullOrEmpty(pathToConfig)) pathToConfig = GlobalConfigPath;
