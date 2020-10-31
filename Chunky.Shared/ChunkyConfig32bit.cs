@@ -36,6 +36,8 @@ namespace Chunky.Shared
             ChunkCountY = chunkCountY;
             MinDepth = minDepth;
             MaxDepth = maxDepth;
+
+            _pathsParsed = false;
         }
 
         public ChunkyConfig32bit(
@@ -118,9 +120,9 @@ namespace Chunky.Shared
         /// </summary>
         public string TargetDir { get; private set; }
         /// <summary>
-        /// The path of the source bitmap.
+        /// The path of the source bitmap (or directory for batch operations)
         /// </summary>
-        public string SourcePath { get; private set; }
+        public string SourcePath { get; set; }
         /// <summary>
         /// The target image type of the bitmap.
         /// Allowed values: png, jpg, bmp
@@ -179,6 +181,20 @@ namespace Chunky.Shared
         /// Describes the maximum value of any given pixel channel
         /// </summary>
         public byte MaxDepth { get; private set; }
+
+        private bool _pathsParsed;
+
+        public ChunkyConfig32bit ParsePaths()
+        {
+            if (_pathsParsed) return this;
+
+            SourcePath = Utils.ParsePath(SourcePath);
+            TargetDir = Utils.ParsePath(TargetDir);
+            
+            _pathsParsed = true;
+
+            return this;
+        }
     }
 
     public enum RemainderHandlingMode
