@@ -2,12 +2,17 @@
 
 A simple program that turns images into chunks.
 
-Under development, wouldn't recommend using it just yet.
+Under development, early stages. Not really usable as of yet.
 
 ## Usage
 
-Current state of the program lacks any user interface, but it'll
-have a cli interface that allows using it in scripts.
+Current state of the program lacks a sophisticated user interface, but base
+functionality can be used. Currently available commands:
+* `-s` or `--source` `<image_path>` for single-image processing
+* `-s` or `--source` `<directory_path>` for a automatic batch operation
+* `-h` or `--help` to show currently available commands (always up-to-date, more so than this readme)
+
+Currently the output only saves to `<exe_dir>/<image_name>/<name>-x-y.png`.
 
 Chunky accepts two kinds of rules:
 * Set width and height
