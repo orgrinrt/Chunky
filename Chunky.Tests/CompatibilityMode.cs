@@ -18,7 +18,7 @@ namespace Chunky.Tests
         }
         
         [Fact]
-        public void ExperimentalModeIsFaster()
+        public void ExperimentalModeDoesntCrashAndIsFaster()
         {
             string fileName = "testmap.png";
             string assetsDir = Path.Combine(Utils.SolveAssemblyRootDir(Assembly.GetCallingAssembly()), "Assets");
@@ -60,6 +60,7 @@ namespace Chunky.Tests
             _testOutputHelper.WriteLine("Non threaded duration: " + nonThreadedDuration);
             _testOutputHelper.WriteLine("Threaded duration: " + threadedDuration);
             Assert.True(threadedDuration < nonThreadedDuration);
+            // if we got here then it didn't crash either
         }
     }
 }
