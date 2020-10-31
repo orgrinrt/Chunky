@@ -8,17 +8,17 @@ using Xunit.Abstractions;
 
 namespace Chunky.Tests
 {
-    public class ChonkerSpeed
+    public class CompatibilityMode
     {
         private readonly ITestOutputHelper _testOutputHelper;
 
-        public ChonkerSpeed(ITestOutputHelper testOutputHelper)
+        public CompatibilityMode(ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
         }
         
         [Fact]
-        public void EnsureThreadedChonkingIsFaster()
+        public void ExperimentalModeIsFaster()
         {
             string fileName = "testmap.png";
             string assetsDir = Path.Combine(Utils.SolveAssemblyRootDir(Assembly.GetCallingAssembly()), "Assets");
