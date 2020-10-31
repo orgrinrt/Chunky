@@ -90,7 +90,16 @@ namespace Chunky.Shared
             targetDir ??= Config.TargetDir;
 
             string path = Path.Combine(targetDir, name);
-            
+
+            if (Directory.Exists(path))
+            {
+                string[] files = Directory.GetFiles(path);
+
+                foreach (string filePath in files)
+                {
+                    File.Delete(filePath);
+                }
+            }
             Directory.CreateDirectory(path);
 
             for (int x = 0; x < Result.GetLength(0); x++)
@@ -112,13 +121,13 @@ namespace Chunky.Shared
                         chunk.Bitmap.Save(Path.Combine(path, name + "-" + chunk.X + "-" + chunk.Y + ".png"),
                             ImageFormat.Png);
                     }
-                    
                 }
             }
 
             if (exportReconstruction)
             {
-                Reconstructor reconstructor = new Reconstructor(Result, name, (short)OriginalBitmap.Width, (short)OriginalBitmap.Height);
+                //Reconstructor reconstructor = new Reconstructor(Result, name, (short)OriginalBitmap.Width, (short)OriginalBitmap.Height);
+                Reconstructor reconstructor = new Reconstructor(path, name, (short)OriginalBitmap.Width, (short)OriginalBitmap.Height);
                 if (exportVarianceTest) reconstructor.ReconstructAndCompare(OriginalBitmap, path);
                 else reconstructor.Reconstruct(targetDir);
             }
