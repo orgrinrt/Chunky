@@ -16,18 +16,18 @@ namespace Chunky
             string testMapPath = Path.Combine(assetsDir, fileName);
             Console.WriteLine(testMapPath);
             
-            
-            ChunkyController controller = new ChunkyController(new ChunkyConfig32bit(
+            /*
+            ChunkyProcessor processor = new ChunkyProcessor(new ChunkyConfig32bit(
                 testMapPath,
                 (short)10,
                 (short)10,
                 false,
                 true,
                 true));
-            controller.Chunkify();
+            processor.Chunkify();
+            */
             
-            /*
-            ChunkyBatchController batcher = new ChunkyBatchController(new ChunkyConfig32bit(
+            ChunkyBatchProcessor batcher = new ChunkyBatchProcessor(new ChunkyConfig32bit(
                 assetsDir,
                 (short)10,
                 (short)10,
@@ -35,7 +35,7 @@ namespace Chunky
                 true,
                 true));
             batcher.Chunkify();
-            */
+            
         }
 
         private static void ParseArgs(string[] args)

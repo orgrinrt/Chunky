@@ -64,14 +64,14 @@ namespace Chunky.Tests
             // Let's do non-threaded first
             
             sw.Start();
-            ChunkyController controllerA = new ChunkyController(new ChunkyConfig32bit(
+            ChunkyProcessor processorA = new ChunkyProcessor(new ChunkyConfig32bit(
                 testMapPath,
                 256,
                 256,
                 true,
                 false,
                 false));
-            controllerA.Chunkify();
+            processorA.Chunkify();
             nonThreadedDuration = sw.ElapsedMilliseconds;
             sw.Stop();
             sw.Reset();
@@ -79,14 +79,14 @@ namespace Chunky.Tests
             // And then threaded
             
             sw.Start();
-            ChunkyController controllerB = new ChunkyController(new ChunkyConfig32bit(
+            ChunkyProcessor processorB = new ChunkyProcessor(new ChunkyConfig32bit(
                 testMapPath,
                 256,
                 256,
                 false,
                 false,
                 false));
-            controllerB.Chunkify();
+            processorB.Chunkify();
             threadedDuration = sw.ElapsedMilliseconds;
             sw.Stop();
 

@@ -6,16 +6,16 @@ using System.Threading;
 
 namespace Chunky.Shared
 {
-    public class ChunkyBatchController
+    public class ChunkyBatchProcessor
     {
         private ChunkyConfig32bit _config;
-        private List<ChunkyController> _controllers = new List<ChunkyController>();
+        private ConcurrentQueue<ChunkyProcessor> _processors = new ConcurrentQueue<ChunkyProcessor>();
         private ChunkData[][,] _result;
         
         public ChunkyConfig32bit Config => _config;
         public ChunkData[][,] Result => _result;
 
-        public ChunkyBatchController(ChunkyConfig32bit config)
+        public ChunkyBatchProcessor(ChunkyConfig32bit config)
         {
             _config = config;
 
@@ -25,7 +25,7 @@ namespace Chunky.Shared
 
             foreach (string filePath in files)
             {
-                _controllers.Add(new ChunkyController(new ChunkyConfig32bit(
+                _processors.Enqueue(new ChunkyProcessor(new ChunkyConfig32bit(
                     config.Name,
                     config.TargetDir,
                     filePath,
@@ -47,27 +47,39 @@ namespace Chunky.Shared
         {
             BlockingCollection<ChunkData[,]> result = new BlockingCollection<ChunkData[,]>();
             int processedCount = 0;
+            int currProcessing = 0;
             object countLock = new object();
+            object currProcessingLock = new object();
 
-            foreach (ChunkyController controller in _controllers)
+            while (_processors.Count > 0)
             {
+                if (Chunky.Config.ParallelProcessCount < currProcessing) continue;
+                
                 if (!Config.CompatibilityMode)
                 {
                     Thread thread = new Thread(() =>
                     {
-                        result.Add(controller.Chunkify(saveToDisk));
-                        lock (countLock) processedCount++;
+                        if (_processors.TryDequeue(out ChunkyProcessor processor))
+                        {
+                            lock (currProcessingLock) currProcessing++;
+                            result.Add(processor.Chunkify(saveToDisk));
+                            lock (countLock) processedCount++;
+                            lock (currProcessingLock) currProcessing--;
+                        }
                     });
                     thread.Start();
                 }
                 else
                 {
-                    result.Add(controller.Chunkify(saveToDisk));
-                    processedCount++;
+                    if (_processors.TryDequeue(out ChunkyProcessor processor))
+                    {
+                        result.Add(processor.Chunkify(saveToDisk));
+                        processedCount++;
+                    }
                 }
             }
             
-            while (processedCount < _controllers.Count) { }
+            while (processedCount < _processors.Count) { }
 
             _result = result.ToArray();
             return _result;

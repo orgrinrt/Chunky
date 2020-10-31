@@ -10,7 +10,7 @@ namespace Chunky.Shared
     /// Controls all chunking behaviour for a single bitmap instance.
     /// For batch operations etc. use multiple controllers.
     /// </summary>
-    public class ChunkyController
+    public class ChunkyProcessor
     {
         // immutable by design, to allow for safer multi-threading
         // for new images/batch operations, allocate new ones or replace with new instance
@@ -23,7 +23,7 @@ namespace Chunky.Shared
         public Bitmap OriginalBitmap => _originalBitmap;
         public ChunkData[,] Result => _result;
         
-        public ChunkyController(ChunkyConfig32bit config)
+        public ChunkyProcessor(ChunkyConfig32bit config)
         {
             string name = "";
             string targetDir = "";
